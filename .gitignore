@@ -127,6 +127,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+S3_BUCKET_NAME=your_bucket_name
+S3_REGION=your_region
+JWT_SECRET = a3f7c8d9e6b4a1c2d5f8e9b7a4c3d6e7f9a8b7c6d5e4f3a2b1c0d9e8f5a6c7
 
 # Spyder project settings
 .spyderproject
