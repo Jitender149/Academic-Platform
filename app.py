@@ -1,41 +1,33 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
-from werkzeug.security import generate_password_hash
-import boto3
+from werkzeug.security import check_password_hash, generate_password_hash
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize app
+# Initialize Flask app
 app = Flask(__name__)
-from flask_cors import CORS
 CORS(app)
 
 # Configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET')
+app.config['UPLOAD_FOLDER'] = 'E:/DEP'  # Local storage folder for uploaded files
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Allow files up to 16 MB
-# app.config['UPLOAD_FOLDER'] = 'uploads'
-# os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# Ensure the upload folder exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
-# AWS S3 Configuration
-S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
-S3_REGION = os.getenv('S3_REGION')
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
-)
-
 # Models
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -47,7 +39,7 @@ class Upload(db.Model):
     course_code = db.Column(db.String(20), nullable=False)
     description = db.Column(db.String(200), nullable=False)
     tags = db.Column(db.String(200), nullable=False)  # Comma-separated tags
-    file_url = db.Column(db.String(500), nullable=True)  # File path or link
+    file_path = db.Column(db.String(500), nullable=False)  # File path or link
     upvotes = db.Column(db.Integer, default=0)
     downvotes = db.Column(db.Integer, default=0)
 
@@ -57,36 +49,39 @@ class Comment(db.Model):
     author = db.Column(db.String(80), nullable=False)
     text = db.Column(db.String(500), nullable=False)
 
-# Initialize database
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
-
 # Helper function for allowed file extensions
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'docx', 'txt'}
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Routes
+# Signup API
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
-    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')  # Hash password in production!
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')  # Secure password hashing
     new_user = User(username=data['username'], password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
+    
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User created successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': f'Error: {str(e)}'}), 500
 
+# Login API
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
-
+    
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'message': 'Invalid credentials'}), 401
+    
     access_token = create_access_token(identity={'username': user.username})
     return jsonify({'access_token': access_token}), 200
 
+# File Upload API
 @app.route('/uploads', methods=['POST'])
 @jwt_required()
 def upload_file():
@@ -102,15 +97,10 @@ def upload_file():
 
     if file and allowed_file(file.filename):
         try:
-            # Secure the filename and upload to S3
+            # Save the file locally
             filename = secure_filename(file.filename)
-            s3_client.upload_fileobj(
-                file,
-                S3_BUCKET_NAME,
-                filename,
-                ExtraArgs={"ACL": "public-read"}
-            )
-            file_url = f"https://{S3_BUCKET_NAME}.s3.{S3_REGION}.amazonaws.com/{filename}"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
             # Save metadata in the database
             data = request.form
@@ -118,23 +108,44 @@ def upload_file():
                 author=current_user['username'],
                 course_code=data['course_code'],
                 description=data['description'],
-                tags=','.join(data.getlist('tags')),
-                file_url=file_url
+                tags=data['tags'],  # Tags sent as a comma-separated string from the frontend
+                file_path=file_path,
             )
             db.session.add(new_upload)
             db.session.commit()
 
-            return jsonify({'message': 'File uploaded successfully', 'file_url': file_url}), 201
+            return jsonify({'message': 'File uploaded successfully', 'file_path': file_path}), 201
 
         except Exception as e:
             return jsonify({'message': f'Error uploading file: {str(e)}'}), 500
 
     return jsonify({'message': 'File type not allowed'}), 400
 
+# Get All Uploads API
+@app.route('/uploads', methods=['GET'])
+def get_uploads():
+    uploads = Upload.query.all()
+    
+    return jsonify([
+        {
+            'id': u.id,
+            'author': u.author,
+            'course_code': u.course_code,
+            'description': u.description,
+            'tags': u.tags.split(','),  # Convert tags back into an array for the frontend
+            'file_path': u.file_path,
+            'upvotes': u.upvotes,
+            'downvotes': u.downvotes,
+        }
+        for u in uploads
+    ])
+
+# Voting API (Upvote/Downvote)
 @app.route('/uploads/<int:upload_id>/vote', methods=['POST'])
 @jwt_required()
 def vote(upload_id):
     data = request.get_json()
+    
     upload_item = Upload.query.get(upload_id)
     
     if not upload_item:
@@ -146,12 +157,15 @@ def vote(upload_id):
         upload_item.downvotes += 1
     
     db.session.commit()
+    
     return jsonify({'message': f"{data['type']} recorded successfully"})
 
+# Comments API (Add Comment)
 @app.route('/uploads/<int:upload_id>/comments', methods=['POST'])
 @jwt_required()
 def comment(upload_id):
     data = request.get_json()
+    
     current_user = get_jwt_identity()
     
     new_comment = Comment(
@@ -160,15 +174,15 @@ def comment(upload_id):
         text=data['text']
     )
     
-    db.session.add(new_comment)
-    db.session.commit()
+    try:
+        db.session.add(new_comment)
+        db.session.commit()
+        return jsonify({'message': 'Comment added successfully'})
     
-    return jsonify({'message': 'Comment added successfully'})
+    except Exception as e:
+        return jsonify({'message': f'Error adding comment: {str(e)}'}), 500
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables if they don't exist
     app.run(debug=True)
-
-
-
