@@ -1,0 +1,64 @@
+/* Light Theme Upload Form Styling */
+
+.upload-form-container {
+    background-color: #f9f9ff; /* Light blue-white background */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .upload-form-title {
+    color: #1976d2; /* Blue title color */
+  }
+  
+  .upload-form-section {
+    margin-bottom: 20px;
+  }
+  
+  .tags-title {
+    color: #333333; /* Dark gray text for tags title */
+  }
+  
+  .tag-switch .MuiFormControlLabel-label {
+    color: #333333; /* Dark gray text for switches */
+  }
+  
+  .upload-form-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* Input Fields */
+  .MuiOutlinedInput-root {
+    background-color: #ffffff; /* White background for input fields */
+  }
+  
+  .MuiOutlinedInput-input {
+    color: #333333; /* Dark gray text for input fields */
+  }
+  
+  .MuiInputLabel-root {
+    color: #666666; /* Medium gray text for labels */
+  }
+  
+  .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: #1976d2; /* Blue hover effect */
+  }
+  
+  .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #1976d2; /* Blue focus effect */
+  }
+  
+  /* Buttons */
+  button:hover {
+    background-color: rgba(25, 118, 210, 0.1); /* Light blue hover effect */
+  }
+  
+  button[type='submit'] {
+    background-color: #1976d2; /* Blue upload button */
+  }
+  
+  button[type='submit']:hover {
+    background-color: #115293; /* Darker blue hover effect */
+  }
+  

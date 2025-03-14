@@ -1,0 +1,49 @@
+/* Home.css - Styling for the Home Page */
+
+.home-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  text-align: center;
+}
+
+.home-card {
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.home-card:hover {
+  transform: translateY(-5px);
+}
+
+.home-title {
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.home-subtitle {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #424242;
+}
+
+.home-description {
+  font-size: 16px;
+  margin: 20px auto;
+  color: #616161;
+}
+
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+button {
+  font-weight: bold;
+}
