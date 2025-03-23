@@ -52,6 +52,7 @@ import {
   Share as ShareIcon,
   Chat as ChatIcon,
   Download as DownloadIcon,
+  Description as DescriptionIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 import PageHeader from './PageHeader';
@@ -89,6 +90,84 @@ const availableTags = [
 const years = ['2020', '2021', '2022', '2023', '2024'];
 const semesters = ['Spring', 'Summer', 'Fall', 'Winter'];
 
+// ResourceSearch Component
+const ResourceSearch = ({ onUploadClick, onAdvancedSearch }) => {
+  return (
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'center',
+      gap: 2, 
+      mb: 4 
+    }}>
+      <Button
+        variant="contained"
+        startIcon={<CloudUploadIcon />}
+        onClick={onUploadClick}
+        sx={{ 
+          px: 4,
+          py: 1,
+          fontSize: '1rem'
+        }}
+      >
+        UPLOAD MATERIAL
+      </Button>
+      <Button
+        variant="outlined"
+        startIcon={<SearchIcon />}
+        onClick={onAdvancedSearch}
+        sx={{ 
+          px: 4,
+          py: 1,
+          fontSize: '1rem'
+        }}
+      >
+        SEARCH MATERIALS
+      </Button>
+    </Box>
+  );
+};
+
+// ResourcePagination Component
+const ResourcePagination = ({ page, count, onChange }) => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        mt: 4,
+        mb: 4,
+        '& .MuiPagination-ul': {
+          '& .MuiPaginationItem-root': {
+            color: 'text.primary',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            '&.Mui-selected': {
+              backgroundColor: 'primary.main',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+              },
+            },
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            },
+          },
+        },
+      }}
+    >
+      <Pagination
+        count={count}
+        page={page}
+        onChange={onChange}
+        color="primary"
+        size="large"
+        showFirstButton
+        showLastButton
+        shape="rounded"
+      />
+    </Box>
+  );
+};
+
 const Resource = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -100,7 +179,7 @@ const Resource = () => {
   const [openUpload, setOpenUpload] = useState(false);
   const [courseCode, setCourseCode] = useState('');
   const [year, setYear] = useState('');
-  const [semester, setSemester] = useState('');
+  const [uploadSemester, setUploadSemester] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -113,24 +192,11 @@ const Resource = () => {
 
   // State for search and filters
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({
-    instructor: '',
-    semester: '',
-    year: '',
-    categories: {
-      assignments: false,
-      books: false,
-      endterm: false,
-      lectureslides: false,
-      midterm: false,
-      notes: false,
-      programming: false,
-      quizzes: false,
-      tutorials: false,
-      miscellaneous: false,
-    },
-  });
+  const [searchCourseCode, setSearchCourseCode] = useState('');
+  const [searchYear, setSearchYear] = useState('');
+  const [searchSemester, setSearchSemester] = useState('');
+  const [searchTags, setSearchTags] = useState([]);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   // State for materials
   const [materials, setMaterials] = useState([]);
@@ -194,12 +260,25 @@ const Resource = () => {
     setFileTitle('');
     setFileDescription('');
     setFileTags([]);
+    setCourseCode('');
+    setYear('');
+    setUploadSemester('');
+    setSelectedTags([]);
   };
 
   // Handle file selection
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+  };
+
+  // Handle tag selection
+  const handleTagSelect = (tag) => {
+    setSelectedTags(prev => 
+      prev.includes(tag)
+        ? prev.filter(t => t !== tag) // Remove tag if already selected
+        : [...prev, tag] // Add tag if not selected
+    );
   };
 
   // Handle upload submission
@@ -233,7 +312,7 @@ const Resource = () => {
       formData.append('tags', selectedTags.join(','));
       
       if (year) formData.append('year', year);
-      if (semester) formData.append('semester', semester);
+      if (uploadSemester) formData.append('semester', uploadSemester);
 
       // Add either file or link
       if (selectedFile) {
@@ -274,11 +353,12 @@ const Resource = () => {
     }
   };
 
-  // Update the handleVote function to properly handle vote toggling
+  // Update the handleVote function to properly handle vote switching
   const handleVote = async (materialId, voteType) => {
     try {
       const material = materials.find(m => m.id === materialId);
       const currentVote = material?.userVote;
+      const token = localStorage.getItem('token');
       
       // If clicking the same vote type, remove the vote
       if (currentVote === voteType) {
@@ -286,9 +366,7 @@ const Resource = () => {
           `http://127.0.0.1:5000/uploads/${materialId}/vote`,
           { type: 'remove' },
           {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
           }
         );
 
@@ -313,12 +391,10 @@ const Resource = () => {
           `http://127.0.0.1:5000/uploads/${materialId}/vote`,
           { 
             type: voteType,
-            previous_vote: currentVote 
+            previous_vote: currentVote // Send the previous vote to backend
           },
           {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
           }
         );
 
@@ -326,11 +402,29 @@ const Resource = () => {
           setMaterials(prevMaterials => 
             prevMaterials.map(m => {
               if (m.id === materialId) {
+                // Calculate new vote counts based on the switch
+                let newUpvotes = m.upvotes;
+                let newDownvotes = m.downvotes;
+
+                // Remove previous vote if exists
+                if (currentVote === 'upvote') {
+                  newUpvotes--;
+                } else if (currentVote === 'downvote') {
+                  newDownvotes--;
+                }
+
+                // Add new vote
+                if (voteType === 'upvote') {
+                  newUpvotes++;
+                } else if (voteType === 'downvote') {
+                  newDownvotes++;
+                }
+
                 return {
                   ...m,
                   userVote: voteType,
-                  upvotes: response.data.upvotes,
-                  downvotes: response.data.downvotes
+                  upvotes: response.data.upvotes || newUpvotes,
+                  downvotes: response.data.downvotes || newDownvotes
                 };
               }
               return m;
@@ -452,6 +546,7 @@ const Resource = () => {
   // Enhanced material card render with animations
   const renderMaterialCard = (material) => {
     const tags = Array.isArray(material.tags) ? material.tags : material.tags?.split(',') || [];
+    const isImageFile = material.file_url?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
     return (
       <motion.div
@@ -467,6 +562,7 @@ const Resource = () => {
             display: 'flex', 
             flexDirection: 'column',
             position: 'relative',
+            width: '100%',
             '&:hover': {
               transform: 'translateY(-4px)',
               boxShadow: 3,
@@ -474,32 +570,53 @@ const Resource = () => {
             }
           }}
         >
-          {material.file_url && (
-            <CardMedia
-              component="img"
-              height="140"
-              image={material.file_url}
-              alt={material.title}
-              sx={{ 
-                objectFit: 'cover',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  transition: 'transform 0.3s ease-in-out'
-                }
-              }}
-            />
-          )}
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Typography gutterBottom variant="h6" component="div" sx={{ 
-              fontWeight: 'bold',
+          {material.file_url ? (
+            isImageFile ? (
+              <CardMedia
+                component="img"
+                height="140"
+                image={material.file_url}
+                alt={material.title}
+                sx={{ 
+                  objectFit: 'cover',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'transform 0.3s ease-in-out'
+                  }
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  height: 140,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'action.hover',
+                  color: 'text.secondary'
+                }}
+              >
+                <Box sx={{ textAlign: 'center' }}>
+                  <DescriptionIcon sx={{ fontSize: 60, mb: 1 }} />
+                  <Typography variant="body2" component="div">
+                    {material.file_url.split('/').pop()?.split('.').pop()?.toUpperCase() || 'FILE'}
+                  </Typography>
+                </Box>
+              </Box>
+            )
+          ) : null}
+          <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+            <Typography variant="subtitle1" sx={{ 
+              fontWeight: 600,
               color: 'primary.main',
-              mb: 1
+              mb: 1,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}>
-              {material.title}
+              {material.course_code} • {material.year} • {material.semester}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {material.description}
-            </Typography>
+
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
               {tags.map((tag, index) => (
                 <Chip
@@ -516,68 +633,99 @@ const Resource = () => {
                 />
               ))}
             </Box>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-              Course: {material.course_code} | Year: {material.year} | Semester: {material.semester}
+
+            <Typography variant="body2" color="text.secondary" sx={{ 
+              mb: 2,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {material.description}
             </Typography>
           </CardContent>
-          <CardActions sx={{ p: 2, pt: 0, display: 'flex', justifyContent: 'space-between' }}>
-            <Box>
-              <Tooltip title="Upvote">
-                <IconButton 
-                  onClick={() => handleVote(material.id, 'upvote')}
-                  color={material.userVote === 'upvote' ? 'primary' : 'default'}
-                >
-                  <ThumbUpIcon />
-                </IconButton>
-              </Tooltip>
-              <Typography variant="body2" component="span" sx={{ mx: 1 }}>
-                {material.upvotes || 0}
-              </Typography>
-              <Tooltip title="Downvote">
-                <IconButton
-                  onClick={() => handleVote(material.id, 'downvote')}
-                  color={material.userVote === 'downvote' ? 'error' : 'default'}
-                >
-                  <ThumbDownIcon />
-                </IconButton>
-              </Tooltip>
-              <Typography variant="body2" component="span" sx={{ mx: 1 }}>
-                {material.downvotes || 0}
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Button 
-                size="small" 
-                color="primary"
-                onClick={() => handleCommentsClick(material.id)}
-                startIcon={<ChatIcon />}
-              >
-                Comments
-              </Button>
-              {material.file_url && (
-                <Button 
-                  size="small" 
-                  color="primary"
-                  href={material.file_url}
-                  target="_blank"
-                  startIcon={<DownloadIcon />}
-                >
-                  Download
-                </Button>
-              )}
-              <Tooltip title="Delete material">
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={() => {
-                    if (window.confirm('Are you sure you want to delete this material?')) {
-                      handleDelete(material.id);
-                    }
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+          <CardActions sx={{ 
+            py: 1,
+            px: 2,
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderTop: '1px solid',
+            borderColor: 'divider'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              width: '100%',
+              justifyContent: 'space-between'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Tooltip title="Upvote">
+                  <IconButton 
+                    size="small"
+                    onClick={() => handleVote(material.id, 'upvote')}
+                    color={material.userVote === 'upvote' ? 'primary' : 'default'}
+                  >
+                    <ThumbUpIcon fontSize="small" />
+                    <Typography variant="caption" sx={{ ml: 0.5 }}>
+                      {material.upvotes || 0}
+                    </Typography>
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Downvote">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleVote(material.id, 'downvote')}
+                    color={material.userVote === 'downvote' ? 'error' : 'default'}
+                  >
+                    <ThumbDownIcon fontSize="small" />
+                    <Typography variant="caption" sx={{ ml: 0.5 }}>
+                      {material.downvotes || 0}
+                    </Typography>
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Tooltip title="Comments">
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={() => handleCommentsClick(material.id)}
+                  >
+                    <ChatIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+
+                {material.file_url && (
+                  <Tooltip title="Download">
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      href={material.file_url}
+                      target="_blank"
+                    >
+                      <DownloadIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
+                <Tooltip title="Delete">
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to delete this material?')) {
+                        handleDelete(material.id);
+                      }
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Box>
           </CardActions>
         </Card>
@@ -600,33 +748,79 @@ const Resource = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  // Add these handler functions before the return statement
+  const handleOpenSearchDialog = () => {
+    setSearchDialogOpen(true);
+  };
+
+  const handleCloseSearchDialog = () => {
+    setSearchDialogOpen(false);
+    // Reset search form
+    setSearchCourseCode('');
+    setSearchYear('');
+    setSearchSemester('');
+    setSearchTags([]);
+  };
+
+  const handleSearchTagToggle = (tag) => {
+    if (searchTags.includes(tag)) {
+      setSearchTags(searchTags.filter((t) => t !== tag));
+    } else {
+      setSearchTags([...searchTags, tag]);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchCourseCode && !searchYear && !searchSemester && searchTags.length === 0) {
+      setSnackbar({
+        open: true,
+        message: 'Please specify at least one search criteria',
+        severity: 'warning'
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (searchCourseCode) params.append('course_code', searchCourseCode);
+      if (searchYear) params.append('year', searchYear);
+      if (searchSemester) params.append('semester', searchSemester);
+      searchTags.forEach(tag => params.append('tags', tag));
+
+      const response = await axios.get(`http://127.0.0.1:5000/search?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setMaterials(response.data.materials);
+      setSearchPerformed(true);
+      handleCloseSearchDialog();
+    } catch (error) {
+      console.error('Error searching materials:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to search materials. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <PageHeader title="Educational Resources" />
       
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ mb: 4, display: 'flex', gap: 2, alignItems: 'center' }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Search resources..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-            }}
-          />
-          <Button
-            variant="contained"
-            startIcon={<UploadIcon />}
-            onClick={handleUploadClick}
-            sx={{ minWidth: '120px' }}
-          >
-            Upload
-          </Button>
-        </Box>
+        <ResourceSearch 
+          onUploadClick={handleUploadClick}
+          onAdvancedSearch={handleOpenSearchDialog}
+        />
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ ml: 0 }}>
           {isLoading ? (
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
               <CircularProgress />
@@ -639,25 +833,31 @@ const Resource = () => {
             </Grid>
           ) : (
             materials.map((material) => (
-              <Grid item xs={12} md={6} lg={4} key={material.id}>
+              <Grid 
+                item 
+                xs={12} 
+                sm={6} 
+                md={6} 
+                lg={3} 
+                key={material.id} 
+                sx={{ 
+                  maxWidth: { xs: '100%', sm: '50%', md: '50%', lg: '25%' },
+                  px: 1.5,
+                  mb: 2
+                }}
+              >
                 {renderMaterialCard(material)}
               </Grid>
             ))
           )}
         </Grid>
 
-        {materials.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={(event, value) => setCurrentPage(value)}
-              color="primary"
-              size="large"
-              showFirstButton
-              showLastButton
-            />
-          </Box>
+        {!isLoading && materials.length > 0 && (
+          <ResourcePagination
+            count={totalPages}
+            page={currentPage}
+            onChange={(event, value) => setCurrentPage(value)}
+          />
         )}
       </Container>
 
@@ -707,8 +907,8 @@ const Resource = () => {
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel>Semester</InputLabel>
               <Select
-                value={semester}
-                onChange={(e) => setSemester(e.target.value)}
+                value={uploadSemester}
+                onChange={(e) => setUploadSemester(e.target.value)}
                 label="Semester"
               >
                 {semesters.map((s) => (
@@ -733,43 +933,32 @@ const Resource = () => {
               onChange={(e) => setLink(e.target.value)}
               sx={{ mb: 2 }}
             />
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                Tags
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-                {selectedTags.map((tag) => (
+            <Box sx={{ mt: 2 }}>
+              <InputLabel>Tags (Required)</InputLabel>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                {availableTags.map((tag) => (
                   <Chip
                     key={tag}
                     label={tag}
-                    onDelete={() => setSelectedTags(selectedTags.filter(t => t !== tag))}
+                    onClick={() => handleTagSelect(tag)}
+                    color={selectedTags.includes(tag) ? "primary" : "default"}
+                    variant={selectedTags.includes(tag) ? "filled" : "outlined"}
                     sx={{
+                      cursor: 'pointer',
                       '&:hover': {
-                        backgroundColor: 'primary.light',
-                        color: 'white',
-                      },
+                        backgroundColor: selectedTags.includes(tag)
+                          ? 'primary.dark'
+                          : 'action.hover'
+                      }
                     }}
                   />
                 ))}
               </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Select Tags</InputLabel>
-                  <Select
-                    value=""
-                    onChange={(e) => {
-                      if (e.target.value && !selectedTags.includes(e.target.value)) {
-                        setSelectedTags([...selectedTags, e.target.value]);
-                      }
-                    }}
-                    label="Select Tags"
-                  >
-                    {availableTags.map((tag) => (
-                      <MenuItem key={tag} value={tag}>{tag}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
+              {selectedTags.length === 0 && (
+                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                  Please select at least one tag
+                </Typography>
+              )}
             </Box>
             <Button
               variant="outlined"
@@ -902,6 +1091,117 @@ const Resource = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Search Dialog */}
+      <Dialog
+        open={searchDialogOpen}
+        onClose={handleCloseSearchDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Search Materials
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseSearchDialog}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Course Code"
+                  fullWidth
+                  value={searchCourseCode}
+                  onChange={(e) => setSearchCourseCode(e.target.value)}
+                  placeholder="Enter course code..."
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Year</InputLabel>
+                  <Select
+                    value={searchYear}
+                    label="Year"
+                    onChange={(e) => setSearchYear(e.target.value)}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {years.map((year) => (
+                      <MenuItem key={year} value={year}>
+                        {year}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Semester</InputLabel>
+                  <Select
+                    value={searchSemester}
+                    label="Semester"
+                    onChange={(e) => setSearchSemester(e.target.value)}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {semesters.map((sem) => (
+                      <MenuItem key={sem} value={sem}>
+                        {sem}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Tags
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {availableTags.map((tag) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      onClick={() => handleSearchTagToggle(tag)}
+                      color={searchTags.includes(tag) ? "primary" : "default"}
+                      variant={searchTags.includes(tag) ? "filled" : "outlined"}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: searchTags.includes(tag)
+                            ? 'primary.dark'
+                            : 'action.hover'
+                        }
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSearchDialog}>Cancel</Button>
+          <Button 
+            onClick={handleSearch}
+            variant="contained"
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} /> : <SearchIcon />}
+          >
+            Search
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

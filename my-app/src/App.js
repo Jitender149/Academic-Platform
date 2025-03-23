@@ -9,6 +9,7 @@ import Login from './Components/Login';
 import Signup from './Components/Signup';
 import AboutUs from './Components/AboutUs';
 import Contact from './Components/Contact';
+import Profile from './Components/Profile';
 import ProtectedRoute from './Components/ProtectedRoute';
 
 function App() {
@@ -47,6 +48,11 @@ function App() {
               <Route path="/contact" element={
                 <ProtectedRoute>
                   <Contact />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               } />
 

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_migrate import Migrate
@@ -9,11 +9,18 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_cors import CORS
+from flasgger import Swagger, swag_from
+import re
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Initialize app
 app = Flask(__name__)
@@ -32,6 +39,7 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET', 'your-secret-key')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -52,8 +60,18 @@ cloudinary.config(
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    password_hash = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    profile_picture = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    last_login = db.Column(db.DateTime, nullable=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -69,6 +87,11 @@ class Upload(db.Model):
     semester = db.Column(db.String(20), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     file_type = db.Column(db.String(10), nullable=True)  # Store file extension
+    __table_args__ = (
+        db.Index('idx_course_code', 'course_code'),
+        db.Index('idx_created_at', 'created_at'),
+        db.Index('idx_author', 'author')
+    )
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,60 +100,137 @@ class Comment(db.Model):
     text = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Vote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    upload_id = db.Column(db.Integer, db.ForeignKey('upload.id'), nullable=False)
+    user = db.Column(db.String(80), nullable=False)
+    vote_type = db.Column(db.String(10), nullable=False)  # 'upvote' or 'downvote'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    __table_args__ = (
+        db.UniqueConstraint('upload_id', 'user', name='unique_user_vote'),
+    )
+
 # Helper function for allowed file extensions
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'docx', 'txt'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Routes
+def validate_username(username):
+    if not username or len(username) < 3:
+        return False, "Username must be at least 3 characters long"
+    if not re.match(r'^[a-zA-Z0-9_]+$', username):
+        return False, "Username can only contain letters, numbers, and underscores"
+    return True, None
+
+def validate_password(password):
+    if not password or len(password) < 6:
+        return False, "Password must be at least 6 characters long"
+    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)', password):
+        return False, "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+    return True, None
+
 @app.route('/signup', methods=['POST'])
 def signup():
     try:
+        logger.debug("Received signup request")
         data = request.get_json()
         
-        # Validate input
-        if not data or 'username' not in data or 'password' not in data:
-            return jsonify({'message': 'Missing username or password'}), 400
-            
+        if not data:
+            logger.warning("No data provided in signup request")
+            return jsonify({'message': 'No data provided'}), 400
+
+        username = data.get('username')
+        password = data.get('password')
+
+        logger.debug(f"Attempting to create user: {username}")
+
+        # Validate username
+        is_valid_username, username_error = validate_username(username)
+        if not is_valid_username:
+            logger.warning(f"Invalid username: {username_error}")
+            return jsonify({'message': username_error}), 400
+
+        # Validate password
+        is_valid_password, password_error = validate_password(password)
+        if not is_valid_password:
+            logger.warning(f"Invalid password: {password_error}")
+            return jsonify({'message': password_error}), 400
+
         # Check if username already exists
-        if User.query.filter_by(username=data['username']).first():
+        if User.query.filter_by(username=username).first():
+            logger.warning(f"Username already exists: {username}")
             return jsonify({'message': 'Username already exists'}), 409
-            
-        hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
-        new_user = User(username=data['username'], password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+
+        # Create new user
+        new_user = User(username=username)
+        new_user.set_password(password)
         
-        return jsonify({'message': 'User created successfully'}), 201
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            logger.info(f"User created successfully: {username}")
+            return jsonify({'message': 'User created successfully'}), 201
+        except Exception as db_error:
+            db.session.rollback()
+            logger.error(f"Database error during signup: {str(db_error)}")
+            return jsonify({'message': 'Error creating user. Please try again.'}), 500
+
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': f'Error creating user: {str(e)}'}), 500
+        logger.error(f"Unexpected error during signup: {str(e)}")
+        return jsonify({'message': 'An unexpected error occurred'}), 500
 
 @app.route('/login', methods=['POST'])
 def login():
     try:
         data = request.get_json()
         
-        # Validate input
-        if not data or 'username' not in data or 'password' not in data:
-            return jsonify({'message': 'Missing username or password'}), 400
-            
-        user = User.query.filter_by(username=data['username']).first()
+        if not data:
+            return jsonify({'message': 'No data provided'}), 400
 
-        if not user or not check_password_hash(user.password, data['password']):
-            return jsonify({'message': 'Invalid credentials'}), 401
-            
-        access_token = create_access_token(identity=user.username)
+        username = data.get('username')
+        password = data.get('password')
+
+        if not username or not password:
+            return jsonify({'message': 'Username and password are required'}), 400
+
+        user = User.query.filter_by(username=username).first()
+        
+        if not user or not user.check_password(password):
+            return jsonify({'message': 'Invalid username or password'}), 401
+
+        # Update last login
+        user.last_login = db.func.now()
+        db.session.commit()
+
+        # Create access token
+        access_token = create_access_token(identity=username)
+        
         return jsonify({
-            'message': 'Login successful',
             'access_token': access_token,
-            'username': user.username
+            'username': username
         }), 200
+
     except Exception as e:
-        return jsonify({'message': f'Error during login: {str(e)}'}), 500
+        return jsonify({'message': 'An unexpected error occurred'}), 500
 
 @app.route('/uploads', methods=['POST'])
 @jwt_required()
+@swag_from({
+    'parameters': [
+        {
+            'name': 'file',
+            'in': 'formData',
+            'type': 'file',
+            'required': True
+        }
+    ],
+    'responses': {
+        201: 'Upload successful',
+        400: 'Invalid input',
+        401: 'Unauthorized'
+    }
+})
 def upload_file():
     try:
         current_user = get_jwt_identity()
@@ -266,28 +366,66 @@ def delete_upload(upload_id):
 @jwt_required()
 def vote(upload_id):
     try:
+        current_user = get_jwt_identity()
         data = request.get_json()
         if not data or 'type' not in data:
             return jsonify({'message': 'Missing vote type'}), 400
             
         upload_item = Upload.query.get(upload_id)
-        
         if not upload_item:
             return jsonify({'message': 'Upload not found'}), 404
 
-        if data['type'] == 'upvote':
-            upload_item.upvotes += 1
-        elif data['type'] == 'downvote':
-            upload_item.downvotes += 1
+        vote_type = data['type']
+        existing_vote = Vote.query.filter_by(
+            upload_id=upload_id,
+            user=current_user
+        ).first()
+
+        # Handle vote removal
+        if vote_type == 'remove' and existing_vote:
+            if existing_vote.vote_type == 'upvote':
+                upload_item.upvotes = max(0, upload_item.upvotes - 1)
+            else:
+                upload_item.downvotes = max(0, upload_item.downvotes - 1)
+            db.session.delete(existing_vote)
+
+        # Handle vote switching or new vote
+        elif vote_type in ['upvote', 'downvote']:
+            if existing_vote:
+                # Switch vote
+                if existing_vote.vote_type != vote_type:
+                    if vote_type == 'upvote':
+                        upload_item.downvotes = max(0, upload_item.downvotes - 1)
+                        upload_item.upvotes += 1
+                    else:
+                        upload_item.upvotes = max(0, upload_item.upvotes - 1)
+                        upload_item.downvotes += 1
+                    existing_vote.vote_type = vote_type
+            else:
+                # New vote
+                new_vote = Vote(
+                    upload_id=upload_id,
+                    user=current_user,
+                    vote_type=vote_type
+                )
+                db.session.add(new_vote)
+                if vote_type == 'upvote':
+                    upload_item.upvotes += 1
+                else:
+                    upload_item.downvotes += 1
         else:
             return jsonify({'message': 'Invalid vote type'}), 400
-        
+
         db.session.commit()
+
+        # Return the user's current vote status along with counts
         return jsonify({
-            'message': f"{data['type']} recorded successfully",
+            'message': f"Vote {vote_type} recorded successfully",
             'upvotes': upload_item.upvotes,
-            'downvotes': upload_item.downvotes
+            'downvotes': upload_item.downvotes,
+            'userVote': vote_type if vote_type != 'remove' else None
         })
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'Error recording vote: {str(e)}'}), 500
@@ -350,10 +488,17 @@ def add_comment(upload_id):
 @jwt_required()
 def recent_uploads():
     try:
+        current_user = get_jwt_identity()
         uploads = Upload.query.order_by(Upload.created_at.desc()).limit(10).all()
         
         materials = []
         for upload in uploads:
+            # Get user's vote for this upload
+            user_vote = Vote.query.filter_by(
+                upload_id=upload.id,
+                user=current_user
+            ).first()
+
             materials.append({
                 'id': upload.id,
                 'author': upload.author,
@@ -363,6 +508,7 @@ def recent_uploads():
                 'file_url': upload.file_url,
                 'upvotes': upload.upvotes,
                 'downvotes': upload.downvotes,
+                'userVote': user_vote.vote_type if user_vote else None,
                 'year': upload.year,
                 'semester': upload.semester,
                 'created_at': upload.created_at.isoformat(),
@@ -437,15 +583,145 @@ def search_materials():
 def verify_token():
     try:
         current_user = get_jwt_identity()
-        return jsonify({
-            'user': current_user,
-            'message': 'Token is valid'
-        }), 200
+        return jsonify({'user': current_user}), 200
     except Exception as e:
         return jsonify({'message': 'Invalid token'}), 401
 
-if __name__ == '__main__':
-    with app.app_context():
+# Add file validation
+def validate_file(file):
+    if not file:
+        return False, "No file provided"
+    if file.content_length > app.config['MAX_CONTENT_LENGTH']:
+        return False, "File too large"
+    if not allowed_file(file.filename):
+        return False, "Invalid file type"
+    return True, None
+
+# Add comprehensive tests
+def test_upload_resource():
+    # Test resource upload
+    pass
+
+def test_user_authentication():
+    # Test user auth
+    pass
+
+# Add new routes for profile management
+@app.route('/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    try:
+        current_user = get_jwt_identity()
+        user = User.query.filter_by(username=current_user).first()
+        
+        if not user:
+            return jsonify({'message': 'User not found'}), 404
+            
+        return jsonify({
+            'username': user.username,
+            'email': user.email,
+            'bio': user.bio,
+            'profile_picture': user.profile_picture
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching profile: {str(e)}'}), 500
+
+@app.route('/update-profile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    try:
+        current_user = get_jwt_identity()  # This returns the username
+        data = request.get_json()
+        
+        # Get user from database using username
+        user = User.query.filter_by(username=current_user).first()
+        if not user:
+            return jsonify({'message': 'User not found'}), 404
+
+        # Update user fields
+        if 'username' in data:
+            # Check if username is already taken
+            existing_user = User.query.filter_by(username=data['username']).first()
+            if existing_user and existing_user.id != user.id:
+                return jsonify({'message': 'Username already taken'}), 400
+            user.username = data['username']
+
+        if 'email' in data:
+            # Check if email is already taken
+            existing_user = User.query.filter_by(email=data['email']).first()
+            if existing_user and existing_user.id != user.id:
+                return jsonify({'message': 'Email already taken'}), 400
+            user.email = data['email']
+
+        if 'bio' in data:
+            user.bio = data['bio']
+
+        # Commit changes
+        db.session.commit()
+
+        # Return updated user data
+        return jsonify({
+            'message': 'Profile updated successfully',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'bio': user.bio,
+                'profile_picture': user.profile_picture
+            }
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating profile: {str(e)}")
+        return jsonify({'message': 'Failed to update profile'}), 500
+
+@app.route('/user-stats', methods=['GET'])
+@jwt_required()
+def get_user_stats():
+    try:
+        current_user = get_jwt_identity()
+        
+        # Get user's uploads count
+        uploads_count = Upload.query.filter_by(author=current_user).count()
+        
+        # Get user's comments count
+        comments_count = Comment.query.filter_by(author=current_user).count()
+        
+        # Get recent activity (last 5 uploads)
+        recent_uploads = Upload.query.filter_by(author=current_user)\
+            .order_by(Upload.created_at.desc())\
+            .limit(5)\
+            .all()
+        
+        recent_activity = [{
+            'id': upload.id,
+            'course_code': upload.course_code,
+            'description': upload.description,
+            'created_at': upload.created_at.isoformat(),
+            'upvotes': upload.upvotes,
+            'downvotes': upload.downvotes
+        } for upload in recent_uploads]
+        
+        return jsonify({
+            'uploads': uploads_count,
+            'comments': comments_count,
+            'recent_activity': recent_activity
+        }), 200
+    except Exception as e:
+        print(f"Error fetching user stats: {str(e)}")
+        return jsonify({'message': f'Error fetching user stats: {str(e)}'}), 500
+
+# Create tables
+with app.app_context():
+    try:
+        # Create tables if they don't exist
         db.create_all()
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {str(e)}")
+        raise
+
+if __name__ == '__main__':
     app.run(debug=True)
 

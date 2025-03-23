@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -25,6 +25,7 @@ import {
   ContactMail,
 } from '@mui/icons-material';
 import { useTheme as useCustomTheme } from '../theme/ThemeContext';
+import { useAuth } from '../context/auth/AuthContext';
 
 const PageHeader = ({ title }) => {
   const navigate = useNavigate();
@@ -32,19 +33,14 @@ const PageHeader = ({ title }) => {
   const { darkMode, toggleDarkMode } = useCustomTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorEl, setAnchorEl] = useState(null);
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const { user, logout } = useAuth();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleProfileMenu = (event) => {
-    setProfileAnchorEl(event.currentTarget);
-  };
-
   const handleClose = () => {
     setAnchorEl(null);
-    setProfileAnchorEl(null);
   };
 
   const handleNavigation = (path) => {
@@ -53,8 +49,9 @@ const PageHeader = ({ title }) => {
   };
 
   const handleLogout = () => {
-    // Add logout logic here
+    logout();
     navigate('/login');
+    handleClose();
   };
 
   const menuItems = [
@@ -97,7 +94,9 @@ const PageHeader = ({ title }) => {
             background: 'linear-gradient(45deg, #5C6BC0 30%, #7C4DFF 90%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            cursor: 'pointer',
           }}
+          onClick={() => navigate('/')}
         >
           {title}
         </Typography>
@@ -137,19 +136,45 @@ const PageHeader = ({ title }) => {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Profile">
-            <IconButton
-              color="inherit"
-              onClick={handleProfileMenu}
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'rgba(92, 107, 192, 0.1)',
-                },
-              }}
-            >
-              <Person />
-            </IconButton>
-          </Tooltip>
+          {user ? (
+            <>
+              <Tooltip title="Profile">
+                <IconButton
+                  color="inherit"
+                  onClick={() => handleNavigation('/profile')}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <Person />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Logout">
+                <IconButton
+                  color="inherit"
+                  onClick={handleLogout}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <Logout />
+                </IconButton>
+              </Tooltip>
+            </>
+          ) : (
+            <>
+              <Button color="inherit" onClick={() => navigate('/login')}>
+                Login
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/signup')}>
+                Sign Up
+              </Button>
+            </>
+          )}
         </Box>
 
         <Menu
@@ -179,33 +204,21 @@ const PageHeader = ({ title }) => {
               {item.text}
             </MenuItem>
           ))}
-        </Menu>
-
-        <Menu
-          anchorEl={profileAnchorEl}
-          open={Boolean(profileAnchorEl)}
-          onClose={handleClose}
-          PaperProps={{
-            sx: {
-              mt: 1.5,
-              borderRadius: 2,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            },
-          }}
-        >
-          <MenuItem
-            onClick={handleLogout}
-            sx={{
-              gap: 1,
-              color: 'error.main',
-              '&:hover': {
-                backgroundColor: 'rgba(211, 47, 47, 0.1)',
-              },
-            }}
-          >
-            <Logout />
-            Logout
-          </MenuItem>
+          {user && (
+            <MenuItem
+              onClick={handleLogout}
+              sx={{
+                gap: 1,
+                color: 'error.main',
+                '&:hover': {
+                  backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                },
+              }}
+            >
+              <Logout />
+              Logout
+            </MenuItem>
+          )}
         </Menu>
       </Toolbar>
     </AppBar>

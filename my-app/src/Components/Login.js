@@ -78,7 +78,7 @@
 // };
 
 // export default Login;
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -88,7 +88,12 @@ import {
   Button,
   Paper,
   Link,
+  CircularProgress,
+  Alert,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '../context/auth/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -99,16 +104,51 @@ export default function Login() {
     username: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters long';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await login(formData.username, formData.password);
+    setServerError('');
     
-    if (result.success) {
-      toast.success('Login successful!');
-      navigate('/');
-    } else {
-      toast.error(result.error || 'Login failed');
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await login(formData.username, formData.password);
+      
+      if (result.success) {
+        toast.success('Login successful!');
+        navigate('/');
+      } else {
+        setServerError(result.error);
+      }
+    } catch (error) {
+      setServerError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,21 +168,56 @@ export default function Login() {
             Login
           </Typography>
           
+          {serverError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {serverError}
+            </Alert>
+          )}
+          
           <TextField
             label="Username"
             value={formData.username}
-            onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, username: e.target.value }));
+              setErrors(prev => ({ ...prev, username: '' }));
+              setServerError('');
+            }}
+            error={!!errors.username}
+            helperText={errors.username}
             required
             fullWidth
+            disabled={loading}
+            autoComplete="username"
           />
           
           <TextField
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={formData.password}
-            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, password: e.target.value }));
+              setErrors(prev => ({ ...prev, password: '' }));
+              setServerError('');
+            }}
+            error={!!errors.password}
+            helperText={errors.password}
             required
             fullWidth
+            disabled={loading}
+            autoComplete="current-password"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           
           <Button
@@ -151,8 +226,9 @@ export default function Login() {
             size="large"
             fullWidth
             sx={{ mt: 2 }}
+            disabled={loading}
           >
-            Login
+            {loading ? <CircularProgress size={24} /> : 'Login'}
           </Button>
           
           <Box sx={{ textAlign: 'center', mt: 2 }}>
@@ -162,6 +238,7 @@ export default function Login() {
                 component="button"
                 variant="body2"
                 onClick={() => navigate('/signup')}
+                disabled={loading}
               >
                 Sign up
               </Link>

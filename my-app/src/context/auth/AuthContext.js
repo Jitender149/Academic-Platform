@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
 
@@ -18,9 +19,11 @@ export const AuthProvider = ({ children }) => {
       .then(response => {
         setUser(response.data.user);
       })
-      .catch(() => {
+      .catch((error) => {
         localStorage.removeItem('token');
         setUser(null);
+        const errorMessage = error.response?.data?.message || 'Session expired. Please login again.';
+        toast.error(errorMessage);
       })
       .finally(() => {
         setLoading(false);
@@ -43,9 +46,30 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
       }
     } catch (error) {
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = error.response.data.message || 'Please check your username and password.';
+            break;
+          case 401:
+            errorMessage = 'Invalid username or password.';
+            break;
+          case 500:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = error.response.data.message || 'An unexpected error occurred.';
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      }
+      
+      toast.error(errorMessage);
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed'
+        error: errorMessage
       };
     }
   };
@@ -53,6 +77,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    toast.success('Logged out successfully');
   };
 
   const signup = async (username, password) => {
@@ -63,12 +88,34 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.status === 201) {
+        toast.success('Account created successfully! Please login.');
         return { success: true };
       }
     } catch (error) {
+      let errorMessage = 'Signup failed. Please try again.';
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = error.response.data.message || 'Please check your input.';
+            break;
+          case 409:
+            errorMessage = 'Username already exists. Please choose another.';
+            break;
+          case 500:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = error.response.data.message || 'An unexpected error occurred.';
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      }
+      
+      toast.error(errorMessage);
       return {
         success: false,
-        error: error.response?.data?.message || 'Signup failed'
+        error: errorMessage
       };
     }
   };
