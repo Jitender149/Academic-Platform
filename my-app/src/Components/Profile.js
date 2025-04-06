@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
 // "use client"
 
@@ -434,13 +430,6 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-<<<<<<< HEAD
-=======
-=======
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 import {
   Container,
   Box,
@@ -450,31 +439,13 @@ import {
   TextField,
   Button,
   Grid,
-<<<<<<< HEAD
   List,
   ListItem,
   ListItemText,
-=======
-<<<<<<< HEAD
-  List,
-  ListItem,
-  ListItemText,
-=======
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  IconButton,
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
   Alert,
   CircularProgress,
 } from "@mui/material"
@@ -512,60 +483,10 @@ const Profile = () => {
   useEffect(() => {
     fetchProfileData()
   }, [])
-=======
-  Snackbar,
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
-  Alert,
-  CircularProgress,
-} from "@mui/material"
-import { CloudUpload as CloudUploadIcon } from "@mui/icons-material"
-import { useAuth } from "../context/auth/AuthContext"
-
-const Profile = () => {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-  const [profileData, setProfileData] = useState({
-    username: "",
-    email: "",
-    bio: "",
-    profile_picture: "",
-  })
-  const [stats, setStats] = useState({
-    uploads: 0,
-    comments: 0,
-    placements_added: 0,
-    placements_searches: 0,
-    interview_experiences_added: 0,
-    interview_experience_searches: 0,
-    dsa_searches: 0,
-    classrooms_created: [],
-    classrooms_joined: [],
-    recent_activity: [],
-  })
-  const [openDialog, setOpenDialog] = useState(false)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-
-  useEffect(() => {
-<<<<<<< HEAD
-    fetchProfileData()
-  }, [])
-=======
-    fetchProfileData();
-  }, []);
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-<<<<<<< HEAD
-        const response = await fetch("http://127.0.0.1:5000/user-stats", {
-=======
-<<<<<<< HEAD
         const response = await fetch("http://127.0.0.1:5000/user-stats", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -737,247 +658,28 @@ const Profile = () => {
       window.removeEventListener("focus", handleFocus)
     }
   }, [])
-=======
-        const response = await fetch('http://127.0.0.1:5000/user-stats', {
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setStats(data)
-        } else {
-          console.error("Failed to fetch user stats")
-        }
-      } catch (error) {
-        console.error("Error fetching user stats:", error)
-      }
-    }
-
-    fetchStats()
-  }, [])
-
-  const fetchProfileData = async () => {
-    try {
-      setLoading(true)
-
-      // Fetch profile data
-      const profileResponse = await fetch("http://127.0.0.1:5000/profile", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      if (profileResponse.ok) {
-        const profileData = await profileResponse.json()
-        console.log("Fetched profile data:", profileData)
-
-        // Ensure no null values in the profile data
-        setProfileData({
-          username: profileData.username || "",
-          email: profileData.email || "",
-          bio: profileData.bio || "",
-          profile_picture: profileData.profile_picture || "",
-        })
-      } else {
-        const errorData = await profileResponse.json()
-        setError(errorData.message || "Failed to fetch profile data")
-      }
-
-      // Fetch stats data
-      const statsResponse = await fetch("http://127.0.0.1:5000/user-stats", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json()
-        setStats(statsData)
-      } else {
-        console.error("Failed to fetch user stats")
-      }
-    } catch (err) {
-      console.error("Error fetching profile data:", err)
-      setError("Failed to fetch profile data: " + (err.message || "Unknown error"))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setProfileData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-    setHasUnsavedChanges(true)
-  }
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-
-    const formData = new FormData()
-    formData.append("file", file)
-
-    try {
-      setSaving(true)
-      setError("") // Clear any previous errors
-
-      console.log("Uploading profile picture...")
-
-      const response = await fetch("http://127.0.0.1:5000/upload-profile-picture", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      })
-
-      const data = await response.json()
-      console.log("Upload response:", data)
-
-      if (response.ok) {
-        setProfileData((prev) => ({
-          ...prev,
-          profile_picture: data.profile_picture || prev.profile_picture,
-        }))
-        setSuccess("Profile picture updated successfully")
-
-        // Force a refresh of the profile data
-        setTimeout(() => {
-          fetchProfileData()
-        }, 500)
-      } else {
-        setError(data.message || "Failed to upload profile picture")
-      }
-    } catch (err) {
-      console.error("Error uploading profile picture:", err)
-      setError("Failed to upload profile picture: " + (err.message || "Unknown error"))
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleSave = async () => {
-    try {
-      setSaving(true)
-      const response = await fetch("http://127.0.0.1:5000/update-profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(profileData),
-      })
-      const data = await response.json()
-
-      if (response.ok) {
-        setSuccess("Profile updated successfully")
-        setHasUnsavedChanges(false)
-      } else {
-        setError(data.message || "Failed to update profile")
-      }
-    } catch (err) {
-      setError("Failed to update profile")
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleBack = () => {
-    if (hasUnsavedChanges) {
-      setOpenDialog(true)
-    } else {
-      navigate("/")
-    }
-<<<<<<< HEAD
-  }
-
-  const refreshData = () => {
-    fetchProfileData()
-  }
-
-  useEffect(() => {
-    const handleFocus = () => {
-      refreshData()
-    }
-
-    window.addEventListener("focus", handleFocus)
-
-    return () => {
-      window.removeEventListener("focus", handleFocus)
-    }
-  }, [])
-=======
-  };
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
       </Box>
-<<<<<<< HEAD
     )
-=======
-<<<<<<< HEAD
-    )
-=======
-    );
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
   }
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
-<<<<<<< HEAD
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-=======
-<<<<<<< HEAD
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-=======
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
           <Typography variant="h4" component="h1">
             Profile
           </Typography>
           <Box>
-<<<<<<< HEAD
             <Button variant="outlined" onClick={handleBack} sx={{ mr: 2 }}>
               Back
             </Button>
             <Button variant="contained" color="primary" onClick={handleSave} disabled={saving || !hasUnsavedChanges}>
               {saving ? <CircularProgress size={24} /> : "Save Changes"}
-=======
-<<<<<<< HEAD
-            <Button variant="outlined" onClick={handleBack} sx={{ mr: 2 }}>
-              Back
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleSave} disabled={saving || !hasUnsavedChanges}>
-              {saving ? <CircularProgress size={24} /> : "Save Changes"}
-=======
-            <Button
-              variant="outlined"
-              onClick={handleBack}
-              sx={{ mr: 2 }}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              disabled={saving || !hasUnsavedChanges}
-            >
-              {saving ? <CircularProgress size={24} /> : 'Save Changes'}
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             </Button>
           </Box>
         </Box>
@@ -995,59 +697,22 @@ const Profile = () => {
         )}
 
         <Grid container spacing={4}>
-<<<<<<< HEAD
           <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
             <Box sx={{ position: "relative", display: "inline-block" }}>
               <Avatar
                 src={profileData.profile_picture || ""}
                 alt={profileData.username || "User"}
-=======
-<<<<<<< HEAD
-          <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
-            <Box sx={{ position: "relative", display: "inline-block" }}>
-              <Avatar
-                src={profileData.profile_picture || ""}
-                alt={profileData.username || "User"}
-=======
-          <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
-            <Box sx={{ position: 'relative', display: 'inline-block' }}>
-              <Avatar
-                src={profileData.profile_picture}
-                alt={profileData.username}
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                 sx={{ width: 150, height: 150, mb: 2 }}
               />
               <input
                 accept="image/*"
-<<<<<<< HEAD
                 style={{ display: "none" }}
-=======
-<<<<<<< HEAD
-                style={{ display: "none" }}
-=======
-                style={{ display: 'none' }}
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                 id="profile-picture-upload"
                 type="file"
                 onChange={handleImageUpload}
               />
               <label htmlFor="profile-picture-upload">
-<<<<<<< HEAD
                 <Button component="span" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
-=======
-<<<<<<< HEAD
-                <Button component="span" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
-=======
-                <Button
-                  component="span"
-                  variant="outlined"
-                  startIcon={<CloudUploadIcon />}
-                  disabled={saving}
-                >
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                   Upload Picture
                 </Button>
               </label>
@@ -1096,42 +761,18 @@ const Profile = () => {
             Statistics
           </Typography>
           <Grid container spacing={2}>
-<<<<<<< HEAD
             <Grid item xs={12} sm={6} md={4}>
               <Paper sx={{ p: 2, textAlign: "center" }}>
-=======
-<<<<<<< HEAD
-            <Grid item xs={12} sm={6} md={4}>
-              <Paper sx={{ p: 2, textAlign: "center" }}>
-=======
-            <Grid item xs={12} sm={6}>
-              <Paper sx={{ p: 2, textAlign: 'center' }}>
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                 <Typography variant="h6">{stats.uploads}</Typography>
                 <Typography color="textSecondary">Total Uploads</Typography>
               </Paper>
             </Grid>
-<<<<<<< HEAD
             <Grid item xs={12} sm={6} md={4}>
               <Paper sx={{ p: 2, textAlign: "center" }}>
-=======
-<<<<<<< HEAD
-            <Grid item xs={12} sm={6} md={4}>
-              <Paper sx={{ p: 2, textAlign: "center" }}>
-=======
-            <Grid item xs={12} sm={6}>
-              <Paper sx={{ p: 2, textAlign: 'center' }}>
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                 <Typography variant="h6">{stats.comments}</Typography>
                 <Typography color="textSecondary">Total Comments</Typography>
               </Paper>
             </Grid>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             <Grid item xs={12} sm={6} md={4}>
               <Paper sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="h6">{stats.placements_added}</Typography>
@@ -1162,7 +803,6 @@ const Profile = () => {
                 <Typography color="textSecondary">DSA Searches</Typography>
               </Paper>
             </Grid>
-<<<<<<< HEAD
           </Grid>
 
           {stats.classrooms_created && stats.classrooms_created.length > 0 && (
@@ -1197,48 +837,6 @@ const Profile = () => {
 
           {stats.recent_activity && stats.recent_activity.length > 0 && (
             <Box sx={{ mt: 3 }}>
-=======
-          </Grid>
-
-          {stats.classrooms_created && stats.classrooms_created.length > 0 && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Classrooms Created
-              </Typography>
-              <List>
-                {stats.classrooms_created.map((classroom) => (
-                  <ListItem key={classroom.id} divider>
-                    <ListItemText primary={classroom.name} secondary={`Classroom ID: ${classroom.id}`} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          )}
-
-          {stats.classrooms_joined && stats.classrooms_joined.length > 0 && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Classrooms Joined
-              </Typography>
-              <List>
-                {stats.classrooms_joined.map((classroom) => (
-                  <ListItem key={classroom.id} divider>
-                    <ListItemText primary={classroom.name} secondary={`Classroom ID: ${classroom.id}`} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          )}
-
-          {stats.recent_activity && stats.recent_activity.length > 0 && (
-            <Box sx={{ mt: 3 }}>
-=======
-          </Grid>
-
-          {stats.recent_activity.length > 0 && (
-            <Box sx={{ mt: 4 }}>
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
               <Typography variant="h6" gutterBottom>
                 Recent Activity
               </Typography>
@@ -1254,18 +852,8 @@ const Profile = () => {
                           </Typography>
                           <br />
                           <Typography component="span" variant="caption" color="textSecondary">
-<<<<<<< HEAD
                             {new Date(activity.created_at).toLocaleDateString()} •{activity.upvotes} upvotes •{" "}
                             {activity.downvotes} downvotes
-=======
-<<<<<<< HEAD
-                            {new Date(activity.created_at).toLocaleDateString()} •{activity.upvotes} upvotes •{" "}
-                            {activity.downvotes} downvotes
-=======
-                            {new Date(activity.created_at).toLocaleDateString()} • 
-                            {activity.upvotes} upvotes • {activity.downvotes} downvotes
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                           </Typography>
                         </>
                       }
@@ -1281,10 +869,6 @@ const Profile = () => {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Confirm Action</DialogTitle>
         <DialogContent>
-<<<<<<< HEAD
-          <Typography>You have unsaved changes. Are you sure you want to leave without saving?</Typography>
-=======
-<<<<<<< HEAD
           <Typography>You have unsaved changes. Are you sure you want to leave without saving?</Typography>
         </DialogContent>
         <DialogActions>
@@ -1295,28 +879,6 @@ const Profile = () => {
               navigate("/")
             }}
             color="error"
-=======
-          <Typography>
-            You have unsaved changes. Are you sure you want to leave without saving?
-          </Typography>
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button
-            onClick={() => {
-<<<<<<< HEAD
-              setOpenDialog(false)
-              navigate("/")
-            }}
-            color="error"
-=======
-              setOpenDialog(false);
-              navigate('/');
-            }} 
-            color="error" 
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             variant="contained"
           >
             Leave
@@ -1324,22 +886,8 @@ const Profile = () => {
         </DialogActions>
       </Dialog>
     </Container>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
   )
 }
 
 export default Profile
-<<<<<<< HEAD
 
-=======
-
-=======
-  );
-};
-
-export default Profile; 
->>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
->>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
