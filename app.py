@@ -285,6 +285,13 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
         logger.info(f"User created successfully: {email}")
+        
+        # Send welcome email
+        if send_welcome_email(email, username):
+            logger.info(f"Welcome email sent to {email}")
+        else:
+            logger.warning(f"Failed to send welcome email to {email}")
+        
         return jsonify({'message': 'User registered successfully'}), 201
     except Exception as e:
         db.session.rollback()
@@ -2322,6 +2329,105 @@ def get_messages(classroom_id):
         return jsonify({'messages': result}), 200
     except Exception as e:
         return jsonify({'message': f'Error fetching messages: {str(e)}'}), 500
+
+def send_welcome_email(email, username):
+    try:
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['From'] = f"DEP Platform <{os.getenv('EMAIL_USERNAME')}>"
+        msg['To'] = email
+        msg['Subject'] = 'Welcome to DEP Platform'
+
+        # Create HTML version of the email
+        html = f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333333;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }}
+                    .header {{
+                        background-color: #1a237e;
+                        color: white;
+                        padding: 20px;
+                        text-align: center;
+                        border-radius: 5px;
+                    }}
+                    .content {{
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 5px;
+                        margin-top: 20px;
+                    }}
+                    .footer {{
+                        text-align: center;
+                        margin-top: 20px;
+                        font-size: 12px;
+                        color: #666666;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Welcome to DEP Platform</h1>
+                </div>
+                <div class="content">
+                    <p>Dear {username},</p>
+                    <p>Thank you for registering with the DEP Platform! Your account has been successfully created.</p>
+                    <p>You can now access all the features of our platform using your registered email address and password.</p>
+                    <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+                    <p>Best regards,<br>DEP Platform Team</p>
+                </div>
+                <div class="footer">
+                    <p>This is an automated message, please do not reply to this email.</p>
+                    <p>© 2024 DEP Platform. All rights reserved.</p>
+                </div>
+            </body>
+        </html>
+        """
+
+        # Create plain text version
+        text = f"""
+        Welcome to DEP Platform
+
+        Dear {username},
+
+        Thank you for registering with the DEP Platform! Your account has been successfully created.
+
+        You can now access all the features of our platform using your registered email address and password.
+
+        If you have any questions or need assistance, please don't hesitate to contact our support team.
+
+        Best regards,
+        DEP Platform Team
+
+        This is an automated message, please do not reply to this email.
+        © 2024 DEP Platform. All rights reserved.
+        """
+
+        # Attach both versions
+        msg.attach(MIMEText(text, 'plain'))
+        msg.attach(MIMEText(html, 'html'))
+
+        # Create SMTP session
+        server = smtplib.SMTP(os.getenv('EMAIL_SERVER'), int(os.getenv('EMAIL_PORT')))
+        server.starttls()
+        server.login(os.getenv('EMAIL_USERNAME'), os.getenv('EMAIL_PASSWORD'))
+        
+        # Send email
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Welcome email sent successfully to {email}")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending welcome email to {email}: {str(e)}")
+        return False
 
 if __name__ == '__main__':
     app.run(debug=True)
