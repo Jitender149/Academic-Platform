@@ -30,6 +30,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "devDependencies": {
+    "@babel/preset-react": "^7.24.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

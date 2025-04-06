@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       // Verify token with backend
-      axios.get('http://127.0.0.1:5000/verify-token', {
+      axios.get('http://localhost:5000/verify-token', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', {
+      const response = await axios.post('http://localhost:5000/login', {
         username,
         password
       });
@@ -80,10 +80,13 @@ export const AuthProvider = ({ children }) => {
     toast.success('Logged out successfully');
   };
 
-  const signup = async (username, password) => {
+  const signup = async (username, email, password) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/signup', {
+      console.log("AuthContext signup called with:", { username, email, password });
+      
+      const response = await axios.post('http://localhost:5000/signup', {
         username,
+        email,
         password
       });
 
@@ -125,12 +128,13 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    signup
+    signup,
+    setUser
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
