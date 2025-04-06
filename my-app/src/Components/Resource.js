@@ -223,7 +223,15 @@ const Resource = () => {
     setIsLoading(true);
     const token = localStorage.getItem('token');
     try {
+<<<<<<< HEAD
       const response = await axios.get('http://localhost:5000/recent-uploads', {
+=======
+<<<<<<< HEAD
+      const response = await axios.get('http://localhost:5000/recent-uploads', {
+=======
+      const response = await axios.get('http://127.0.0.1:5000/recent-uploads', {
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         headers: { Authorization: `Bearer ${token}` },
       });
       setMaterials(response.data.materials);
@@ -307,6 +315,12 @@ const Resource = () => {
 
       // Create FormData
       const formData = new FormData();
+<<<<<<< HEAD
+      formData.append("course_code", courseCode);
+      formData.append("description", description);
+      formData.append("tags", selectedTags.join(','));
+=======
+<<<<<<< HEAD
       formData.append("course_code", courseCode);
       formData.append("description", description);
       formData.append("tags", selectedTags.join(','));
@@ -323,11 +337,42 @@ const Resource = () => {
 
       const response = await axios.post(
         'http://localhost:5000/uploads',
+=======
+      formData.append('course_code', courseCode);
+      formData.append('description', description);
+      formData.append('tags', selectedTags.join(','));
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+      
+      if (year) formData.append("year", year);
+      if (uploadSemester) formData.append("semester", uploadSemester);
+
+      // Add either file or link
+      if (selectedFile) {
+        formData.append("file", selectedFile);
+      } else if (link) {
+        formData.append("link", link);
+      }
+
+      const response = await axios.post(
+<<<<<<< HEAD
+        'http://localhost:5000/uploads',
+=======
+        'http://127.0.0.1:5000/uploads',
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         formData,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
+<<<<<<< HEAD
             // 'Content-Type': 'multipart/form-data'
+=======
+<<<<<<< HEAD
+            // 'Content-Type': 'multipart/form-data'
+=======
+            'Content-Type': 'multipart/form-data'
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
           }
         }
       );
@@ -363,7 +408,15 @@ const Resource = () => {
       // If clicking the same vote type, remove the vote
       if (currentVote === voteType) {
         const response = await axios.post(
+<<<<<<< HEAD
           `http://localhost:5000/uploads/${materialId}/vote`,
+=======
+<<<<<<< HEAD
+          `http://localhost:5000/uploads/${materialId}/vote`,
+=======
+          `http://127.0.0.1:5000/uploads/${materialId}/vote`,
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
           { type: 'remove' },
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -388,7 +441,15 @@ const Resource = () => {
       } else {
         // If changing vote or voting for the first time
         const response = await axios.post(
+<<<<<<< HEAD
           `http://localhost:5000/uploads/${materialId}/vote`,
+=======
+<<<<<<< HEAD
+          `http://localhost:5000/uploads/${materialId}/vote`,
+=======
+          `http://127.0.0.1:5000/uploads/${materialId}/vote`,
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
           { 
             type: voteType,
             previous_vote: currentVote // Send the previous vote to backend
@@ -460,7 +521,15 @@ const Resource = () => {
     setIsLoadingComments(true);
     const token = localStorage.getItem('token');
     try {
+<<<<<<< HEAD
       const response = await axios.get(`http://localhost:5000/uploads/${materialId}/comments`, {
+=======
+<<<<<<< HEAD
+      const response = await axios.get(`http://localhost:5000/uploads/${materialId}/comments`, {
+=======
+      const response = await axios.get(`http://127.0.0.1:5000/uploads/${materialId}/comments`, {
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         headers: { Authorization: `Bearer ${token}` },
       });
       setComments(response.data.comments);
@@ -478,7 +547,15 @@ const Resource = () => {
     const token = localStorage.getItem('token');
     try {
       const response = await axios.post(
+<<<<<<< HEAD
         `http://localhost:5000/uploads/${currentMaterialId}/comments`,
+=======
+<<<<<<< HEAD
+        `http://localhost:5000/uploads/${currentMaterialId}/comments`,
+=======
+        `http://127.0.0.1:5000/uploads/${currentMaterialId}/comments`,
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         { text: commentText },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -517,7 +594,15 @@ const Resource = () => {
   const handleDelete = async (materialId) => {
     try {
       const response = await axios.delete(
+<<<<<<< HEAD
         `http://localhost:5000/uploads/${materialId}`,
+=======
+<<<<<<< HEAD
+        `http://localhost:5000/uploads/${materialId}`,
+=======
+        `http://127.0.0.1:5000/uploads/${materialId}`,
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -791,7 +876,15 @@ const Resource = () => {
       if (searchSemester) params.append('semester', searchSemester);
       searchTags.forEach(tag => params.append('tags', tag));
 
+<<<<<<< HEAD
       const response = await axios.get(`http://localhost:5000/search?${params.toString()}`, {
+=======
+<<<<<<< HEAD
+      const response = await axios.get(`http://localhost:5000/search?${params.toString()}`, {
+=======
+      const response = await axios.get(`http://127.0.0.1:5000/search?${params.toString()}`, {
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         headers: { Authorization: `Bearer ${token}` }
       });
 

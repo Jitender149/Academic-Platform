@@ -23,8 +23,18 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+<<<<<<< HEAD
 import toast from "react-hot-toast";
 import { useAuth } from '../context/auth/AuthContext';
+=======
+<<<<<<< HEAD
+import toast from "react-hot-toast";
+import { useAuth } from '../context/auth/AuthContext';
+=======
+import { useAuth } from '../context/auth/AuthContext';
+import toast from "react-hot-toast";
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -33,10 +43,24 @@ export default function Signup() {
     username: '',
     password: '',
     confirmPassword: '',
+<<<<<<< HEAD
     email: '',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+=======
+<<<<<<< HEAD
+    email: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+=======
+  });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -53,6 +77,10 @@ export default function Signup() {
       newErrors.username = 'Username can only contain letters, numbers, and underscores';
     }
     
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
     // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -62,6 +90,11 @@ export default function Signup() {
       newErrors.email = 'Invalid email format. Please use a valid IITRPR email address';
     }
     
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
     // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -79,17 +112,39 @@ export default function Signup() {
     }
     
     setErrors(newErrors);
+<<<<<<< HEAD
     return Object.keys(newErrors).length === 0;
+=======
+<<<<<<< HEAD
+    return Object.keys(newErrors).length === 0;
+=======
+    return Object.keys(newErrors).length === 0 ? {} : newErrors;
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     if (!validateForm()) {
+=======
+<<<<<<< HEAD
+    if (!validateForm()) {
+=======
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
       return;
     }
 
     try {
       setLoading(true);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
       console.log("Submitting form with:", {
         username: formData.username,
         email: formData.email,
@@ -136,10 +191,28 @@ export default function Signup() {
           setErrors(prev => ({ ...prev, submit: data.error || 'Failed to create account' }));
         }
       }
+<<<<<<< HEAD
     } catch (error) {
       console.error("Signup error:", error);
       toast.error('Network error. Please try again.');
       setErrors(prev => ({ ...prev, submit: 'Network error. Please try again.' }));
+=======
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error('Network error. Please try again.');
+      setErrors(prev => ({ ...prev, submit: 'Network error. Please try again.' }));
+=======
+      await signup(formData.username, formData.password);
+      setSuccess(true);
+      toast.success('Account created successfully! Please login.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      setErrors({ submit: error.message || 'Failed to create account' });
+      toast.error(error.message || 'Failed to create account');
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
     } finally {
       setLoading(false);
     }
@@ -187,9 +260,21 @@ export default function Signup() {
             label="Username"
             value={formData.username}
             onChange={(e) => {
+<<<<<<< HEAD
               console.log("Username changed:", e.target.value);
               setFormData(prev => ({ ...prev, username: e.target.value }));
               setErrors(prev => ({ ...prev, username: '' }));
+=======
+<<<<<<< HEAD
+              console.log("Username changed:", e.target.value);
+              setFormData(prev => ({ ...prev, username: e.target.value }));
+              setErrors(prev => ({ ...prev, username: '' }));
+=======
+              setFormData(prev => ({ ...prev, username: e.target.value }));
+              setErrors(prev => ({ ...prev, username: '' }));
+              setServerError('');
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             }}
             error={!!errors.username}
             helperText={errors.username || "Username must be at least 3 characters long and can only contain letters, numbers, and underscores"}
@@ -200,6 +285,10 @@ export default function Signup() {
           />
           
           <TextField
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             label="IITRPR Email"
             type="email"
             value={formData.email}
@@ -218,13 +307,30 @@ export default function Signup() {
           />
           
           <TextField
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             label="Password"
             type={showPassword ? 'text' : 'password'}
             value={formData.password}
             onChange={(e) => {
+<<<<<<< HEAD
               console.log("Password changed:", e.target.value);
               setFormData(prev => ({ ...prev, password: e.target.value }));
               setErrors(prev => ({ ...prev, password: '', confirmPassword: '' }));
+=======
+<<<<<<< HEAD
+              console.log("Password changed:", e.target.value);
+              setFormData(prev => ({ ...prev, password: e.target.value }));
+              setErrors(prev => ({ ...prev, password: '', confirmPassword: '' }));
+=======
+              setFormData(prev => ({ ...prev, password: e.target.value }));
+              setErrors(prev => ({ ...prev, password: '', confirmPassword: '' }));
+              setServerError('');
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             }}
             error={!!errors.password}
             helperText={errors.password || "Password requirements:"}
@@ -278,6 +384,13 @@ export default function Signup() {
             onChange={(e) => {
               setFormData(prev => ({ ...prev, confirmPassword: e.target.value }));
               setErrors(prev => ({ ...prev, confirmPassword: '' }));
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+              setServerError('');
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             }}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword || "Re-enter your password to confirm"}
@@ -298,6 +411,10 @@ export default function Signup() {
               ),
             }}
           />
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
 
           <Button
             type="submit"
@@ -321,6 +438,48 @@ export default function Signup() {
             >
               Already have an account? Login
             </Link>
+=======
+          
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            disabled={loading}
+            sx={{ mt: 2 }}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Sign Up'
+            )}
+          </Button>
+<<<<<<< HEAD
+
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => navigate('/login')}
+            >
+              Already have an account? Login
+            </Link>
+=======
+          
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2">
+              Already have an account?{' '}
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => navigate('/login')}
+                disabled={loading}
+              >
+                Login
+              </Link>
+            </Typography>
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
           </Box>
         </Box>
       </Paper>

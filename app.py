@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 from flask import Flask, request, jsonify, send_from_directory, g
+=======
+<<<<<<< HEAD
+from flask import Flask, request, jsonify, send_from_directory, g
+=======
+from flask import Flask, request, jsonify, send_from_directory
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_migrate import Migrate
@@ -14,6 +22,10 @@ from flask_cors import CORS
 from flasgger import Swagger, swag_from
 import re
 import logging
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -24,11 +36,23 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import time
 from functools import wraps
+<<<<<<< HEAD
+=======
+=======
+
+# Load environment variables from .env file
+load_dotenv()
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 # Security headers function
 def add_security_headers(response):
     """Add security headers to each response"""
@@ -46,6 +70,13 @@ load_dotenv()
 # Initialize app
 app = Flask(__name__)
 app.after_request(add_security_headers)
+<<<<<<< HEAD
+=======
+=======
+# Initialize app
+app = Flask(__name__)
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 CORS(app, resources={
     r"/*": {
         "origins": ["http://localhost:3000"],
@@ -55,6 +86,10 @@ CORS(app, resources={
     }
 })
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 # Get the current directory
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'dep.db')
@@ -62,6 +97,8 @@ DB_PATH = os.path.join(BASE_DIR, 'dep.db')
 # Ensure the database directory exists
 os.makedirs(BASE_DIR, exist_ok=True)
 
+<<<<<<< HEAD
+=======
 # Configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -69,12 +106,34 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET', 'your-secret-key')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
+=======
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+# Configurations
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET', 'your-secret-key')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config['UPLOAD_FOLDER'] = 'uploads'
+<<<<<<< HEAD
+=======
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
+<<<<<<< HEAD
 # Initialize extensions
+=======
+<<<<<<< HEAD
+# Initialize extensions
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
@@ -90,9 +149,20 @@ cloudinary.config(
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+<<<<<<< HEAD
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(120), nullable=False)
     password_changed_at = db.Column(db.DateTime, nullable=True)
+=======
+<<<<<<< HEAD
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(120), nullable=False)
+    password_changed_at = db.Column(db.DateTime, nullable=True)
+=======
+    password_hash = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
     bio = db.Column(db.Text, nullable=True)
     profile_picture = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -104,6 +174,10 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 class OTP(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
@@ -117,6 +191,11 @@ class OTP(db.Model):
         db.Index('idx_expires_at', 'expires_at')
     )
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     author = db.Column(db.String(80), nullable=False)
@@ -154,6 +233,10 @@ class Vote(db.Model):
         db.UniqueConstraint('upload_id', 'user', name='unique_user_vote'),
     )
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 # Model for placement data
 class Placement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -217,6 +300,11 @@ class ClassroomMessage(db.Model):
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 # Helper function for allowed file extensions
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'docx', 'txt'}
 def allowed_file(filename):
@@ -239,6 +327,10 @@ def validate_password(password):
 
 @app.route('/signup', methods=['POST'])
 def signup():
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
     data = request.get_json()
     logger.debug(f"Received signup data: {data}")
     
@@ -274,6 +366,8 @@ def signup():
         logger.warning(f"Email already exists: {email}")
         return jsonify({'error': 'Email already exists'}), 409
     
+<<<<<<< HEAD
+=======
     try:
         # Create new user
         new_user = User(
@@ -550,6 +644,290 @@ def send_password_reset_email(email, otp):
     except Exception as e:
         logger.error(f"Error sending password reset email: {str(e)}")
         return False
+=======
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+    try:
+        # Create new user
+        new_user = User(
+            username=username,
+            email=email
+        )
+        new_user.set_password(password)
+        
+        db.session.add(new_user)
+        db.session.commit()
+        logger.info(f"User created successfully: {email}")
+        return jsonify({'message': 'User registered successfully'}), 201
+    except Exception as e:
+<<<<<<< HEAD
+        db.session.rollback()
+        logger.error(f"Error during signup: {str(e)}")
+        return jsonify({'error': 'An error occurred during registration'}), 500
+
+@app.route('/request-password-reset', methods=['POST'])
+def request_password_reset():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+            
+        # Get client IP for rate limiting
+        client_ip = request.remote_addr
+        rate_limit_key = f"pwd_reset:{client_ip}:{email}"
+        
+        # Check rate limiting
+        now = time.time()
+        if hasattr(g, 'rate_limits') and rate_limit_key in g.rate_limits:
+            attempts = [t for t in g.rate_limits[rate_limit_key] if now - t < 3600]  # 1 hour window
+            if len(attempts) >= 5:  # 5 attempts per hour
+                retry_after = 3600 - (now - attempts[0])
+                return jsonify({
+                    'error': 'Too many reset attempts',
+                    'retry_after': retry_after,
+                    'attempts_remaining': 0,
+                    'window_reset': attempts[0] + 3600
+                }), 429
+            
+            attempts_remaining = 5 - len(attempts)
+        else:
+            if not hasattr(g, 'rate_limits'):
+                g.rate_limits = {}
+            g.rate_limits[rate_limit_key] = []
+            attempts_remaining = 5
+
+        # Add current attempt
+        if rate_limit_key in g.rate_limits:
+            g.rate_limits[rate_limit_key].append(now)
+            
+        # Validate IITRPR email domain
+        if not email.endswith('@iitrpr.ac.in'):
+            return jsonify({'error': 'Only IITRPR email addresses (@iitrpr.ac.in) are allowed'}), 400
+        
+        # Check if user exists
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'No account found with this email'}), 404
+        
+        # Generate OTP for password reset
+        otp = ''.join(random.choices('0123456789', k=6))
+        expires_at = datetime.utcnow() + timedelta(minutes=10)  # 10 minutes expiry
+        
+        # Create OTP record
+        otp_record = OTP(
+            email=email,
+            otp_code=otp,
+            expires_at=expires_at,
+            is_used=False
+        )
+        
+        try:
+            db.session.add(otp_record)
+            db.session.commit()
+            
+            # Send OTP via email with password reset specific message
+            if send_password_reset_email(email, otp):
+                return jsonify({
+                    'message': 'Password reset OTP sent successfully to your email',
+                    'expires_in': 600,  # 10 minutes in seconds
+                    'attempts_remaining': attempts_remaining - 1,
+                    'window_reset': now + 3600
+                }), 200
+            else:
+                return jsonify({'error': 'Failed to send password reset email'}), 500
+                
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error saving password reset OTP: {str(e)}")
+            return jsonify({'error': 'Failed to generate password reset OTP'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error in request_password_reset: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/verify-reset-otp', methods=['POST'])
+def verify_reset_otp():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        otp = data.get('otp')
+        new_password = data.get('new_password')
+        
+        if not all([email, otp, new_password]):
+            return jsonify({'error': 'Email, OTP, and new password are required'}), 400
+        
+        # Validate password
+        if len(new_password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters long'}), 400
+        if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)', new_password):
+            return jsonify({'error': 'Password must contain at least one uppercase letter, one lowercase letter, and one number'}), 400
+        
+        # Find the most recent unused OTP for this email
+        otp_record = OTP.query.filter_by(
+            email=email,
+            otp_code=otp,
+            is_used=False
+        ).order_by(OTP.created_at.desc()).first()
+        
+        if not otp_record:
+            return jsonify({'error': 'Invalid OTP'}), 400
+        
+        # Check if OTP has expired
+        if datetime.utcnow() > otp_record.expires_at:
+            return jsonify({'error': 'OTP has expired'}), 400
+        
+        try:
+            # Mark OTP as used
+            otp_record.is_used = True
+            
+            # Update user's password
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+                
+            user.set_password(new_password)
+            user.password_changed_at = datetime.utcnow()  # Track password change time
+            db.session.commit()
+            
+            return jsonify({'message': 'Password reset successful'}), 200
+            
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error during password reset: {str(e)}")
+            return jsonify({'error': 'An error occurred during password reset'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error in verify_reset_otp: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+def send_password_reset_email(email, otp):
+    try:
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['From'] = f"DEP Platform <{os.getenv('EMAIL_USERNAME')}>"
+        msg['To'] = email
+        msg['Subject'] = 'Password Reset Request - DEP Platform'
+
+        # Create HTML version of the email
+        html = f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333333;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }}
+                    .header {{
+                        background-color: #1a237e;
+                        color: white;
+                        padding: 20px;
+                        text-align: center;
+                        border-radius: 5px;
+                    }}
+                    .content {{
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 5px;
+                        margin-top: 20px;
+                    }}
+                    .otp {{
+                        font-size: 32px;
+                        font-weight: bold;
+                        color: #1a237e;
+                        text-align: center;
+                        padding: 20px;
+                        margin: 20px 0;
+                        background-color: #f5f5f5;
+                        border-radius: 5px;
+                        letter-spacing: 5px;
+                    }}
+                    .warning {{
+                        color: #d32f2f;
+                        font-weight: bold;
+                        margin-top: 20px;
+                        padding: 10px;
+                        background-color: #ffebee;
+                        border-radius: 5px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Password Reset Request</h1>
+                </div>
+                <div class="content">
+                    <p>Dear User,</p>
+                    <p>We received a request to reset your password for your DEP Platform account. To proceed with the password reset, please use the following OTP (One-Time Password):</p>
+                    <div class="otp">{otp}</div>
+                    <p><strong>Important Notes:</strong></p>
+                    <ul>
+                        <li>This OTP will expire in 10 minutes</li>
+                        <li>If you didn't request this password reset, please ignore this email</li>
+                        <li>Your account security is important to us</li>
+                    </ul>
+                    <div class="warning">
+                        <p>⚠️ Security Notice:</p>
+                        <ul>
+                            <li>Never share your OTP with anyone</li>
+                            <li>Our team will never ask for your OTP</li>
+                            <li>This is an automated message, please do not reply</li>
+                        </ul>
+                    </div>
+                    <p>Best regards,<br>DEP Platform Team</p>
+                </div>
+            </body>
+        </html>
+        """
+
+        # Create plain text version
+        text = f"""
+        Password Reset Request - DEP Platform
+
+        Dear User,
+
+        We received a request to reset your password for your DEP Platform account. To proceed with the password reset, please use the following OTP (One-Time Password):
+
+        {otp}
+
+        Important Notes:
+        - This OTP will expire in 10 minutes
+        - If you didn't request this password reset, please ignore this email
+        - Your account security is important to us
+
+        Security Notice:
+        ⚠️ Never share your OTP with anyone
+        ⚠️ Our team will never ask for your OTP
+        ⚠️ This is an automated message, please do not reply
+
+        Best regards,
+        DEP Platform Team
+        """
+
+        # Attach both versions
+        msg.attach(MIMEText(text, 'plain'))
+        msg.attach(MIMEText(html, 'html'))
+
+        # Create SMTP session and send email
+        server = smtplib.SMTP(os.getenv('EMAIL_SERVER'), int(os.getenv('EMAIL_PORT')))
+        server.starttls()
+        server.login(os.getenv('EMAIL_USERNAME'), os.getenv('EMAIL_PASSWORD'))
+        server.send_message(msg)
+        server.quit()
+        
+        return True
+    except Exception as e:
+        logger.error(f"Error sending password reset email: {str(e)}")
+        return False
+=======
+        logger.error(f"Unexpected error during signup: {str(e)}")
+        return jsonify({'message': 'An unexpected error occurred'}), 500
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -559,6 +937,10 @@ def login():
         if not data:
             return jsonify({'message': 'No data provided'}), 400
 
+<<<<<<< HEAD
+        email = data.get('email')
+=======
+<<<<<<< HEAD
         email = data.get('email')
         password = data.get('password')
 
@@ -569,12 +951,33 @@ def login():
         
         if not user or not user.check_password(password):
             return jsonify({'message': 'Invalid email or password'}), 401
+=======
+        username = data.get('username')
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+        password = data.get('password')
+
+        if not email or not password:
+            return jsonify({'message': 'Email and password are required'}), 400
+
+        user = User.query.filter_by(email=email).first()
+        
+        if not user or not user.check_password(password):
+<<<<<<< HEAD
+            return jsonify({'message': 'Invalid email or password'}), 401
+=======
+            return jsonify({'message': 'Invalid username or password'}), 401
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
         # Update last login
         user.last_login = db.func.now()
         db.session.commit()
 
         # Create access token
+<<<<<<< HEAD
+        access_token = create_access_token(identity=user.username)
+=======
+<<<<<<< HEAD
         access_token = create_access_token(identity=user.username)
         
         return jsonify({
@@ -976,6 +1379,413 @@ def resend_otp():
                 'error': 'Failed to resend OTP email. Please try again.'
             }), 500
 
+=======
+        access_token = create_access_token(identity=username)
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+        
+        return jsonify({
+            'access_token': access_token,
+            'username': user.username
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Login error: {str(e)}")
+        return jsonify({'message': 'An unexpected error occurred'}), 500
+
+<<<<<<< HEAD
+# Rate limiting decorator
+def rate_limit(limit=5, period=600):  # 5 requests per 10 minutes
+    def decorator(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            # Get client IP
+            client_ip = request.remote_addr
+            key = f"rate_limit:{client_ip}:{f.__name__}"
+            
+            # Get current timestamp
+            now = time.time()
+            
+            # Initialize g object if it doesn't exist
+            if not hasattr(g, 'rate_limits'):
+                g.rate_limits = {}
+            
+            # Get existing requests or initialize
+            if key not in g.rate_limits:
+                g.rate_limits[key] = []
+            
+            requests = g.rate_limits[key]
+            
+            # Remove old requests
+            requests = [req for req in requests if now - req < period]
+            
+            # Check if limit exceeded
+            if len(requests) >= limit:
+                return jsonify({
+                    'error': 'Too many requests. Please try again later.',
+                    'retry_after': int(period - (now - requests[0]))
+                }), 429
+            
+            # Add current request
+            requests.append(now)
+            g.rate_limits[key] = requests
+            
+            # Call the original function
+            return f(*args, **kwargs)
+        return wrapped
+    return decorator
+
+# Session management for OTP attempts
+otp_attempts = {}
+
+def track_otp_attempts(email, max_attempts=5, window_minutes=10):
+    current_time = time.time()
+    if email not in otp_attempts:
+        otp_attempts[email] = []
+    
+    # Remove old attempts
+    otp_attempts[email] = [t for t in otp_attempts[email] if current_time - t < window_minutes * 60]
+    
+    # Check if max attempts exceeded
+    if len(otp_attempts[email]) >= max_attempts:
+        return False, window_minutes * 60 - (current_time - otp_attempts[email][0]), 0
+    
+    # Add new attempt
+    otp_attempts[email].append(current_time)
+    attempts_left = max_attempts - len(otp_attempts[email])
+    return True, 0, attempts_left
+
+def validate_otp_format(otp):
+    if not otp or not isinstance(otp, str):
+        return False
+    if not otp.isdigit():
+        return False
+    if len(otp) != 6:
+        return False
+    return True
+
+@app.route('/verify-otp', methods=['POST'])
+def verify_otp():
+    data = request.get_json()
+    email = data.get('email')
+    otp = data.get('otp')
+    
+    if not email or not otp:
+        logger.warning(f"Missing email or OTP in verification request")
+        return jsonify({'error': 'Email and OTP are required'}), 400
+    
+    # Validate OTP format
+    if not validate_otp_format(otp):
+        logger.warning(f"Invalid OTP format for email: {email}")
+        return jsonify({'error': 'Invalid OTP format'}), 400
+    
+    # Check for too many attempts
+    allowed, retry_after, attempts_left = track_otp_attempts(email)
+    if not allowed:
+        logger.warning(f"Too many OTP verification attempts for email: {email}")
+        return jsonify({
+            'error': 'Too many verification attempts. Please try again later.',
+            'retry_after': int(retry_after),
+            'attempts_left': attempts_left
+        }), 429
+    
+    # Find the most recent unused OTP for this email
+    otp_record = OTP.query.filter_by(
+        email=email,
+        otp_code=otp,  # This matches the field name in the database
+        is_used=False
+    ).order_by(OTP.created_at.desc()).first()
+    
+    if not otp_record:
+        logger.warning(f"Invalid OTP attempt for email: {email}")
+        return jsonify({
+            'error': 'Invalid OTP',
+            'attempts_left': attempts_left
+        }), 400
+    
+    # Check if OTP has expired
+    if datetime.utcnow() > otp_record.expires_at:
+        logger.warning(f"Expired OTP attempt for email: {email}")
+        return jsonify({
+            'error': 'OTP has expired',
+            'attempts_left': attempts_left
+        }), 400
+    
+    try:
+        # Mark OTP as used
+        otp_record.is_used = True
+        
+        # Get user and update last login
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            logger.error(f"User not found for email: {email}")
+            return jsonify({'error': 'User not found'}), 404
+            
+        user.last_login = datetime.utcnow()
+        
+        # Generate access token
+        access_token = create_access_token(identity=user.username)
+        
+        db.session.commit()
+        
+        logger.info(f"Successful OTP verification for email: {email}")
+        return jsonify({
+            'message': 'OTP verified successfully',
+            'access_token': access_token,
+            'username': user.username
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error during OTP verification for email {email}: {str(e)}")
+        return jsonify({'error': 'An error occurred during verification'}), 500
+
+def send_otp_email(email, otp):
+    try:
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['From'] = f"DEP Platform <{os.getenv('EMAIL_USERNAME')}>"
+        msg['To'] = email
+        msg['Subject'] = 'Your DEP Platform Login OTP'
+
+        # Create HTML version of the email
+        html = f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333333;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }}
+                    .header {{
+                        background-color: #1a237e;
+                        color: white;
+                        padding: 20px;
+                        text-align: center;
+                        border-radius: 5px;
+                    }}
+                    .content {{
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 5px;
+                        margin-top: 20px;
+                    }}
+                    .otp {{
+                        font-size: 32px;
+                        font-weight: bold;
+                        color: #1a237e;
+                        text-align: center;
+                        padding: 20px;
+                        margin: 20px 0;
+                        background-color: #f5f5f5;
+                        border-radius: 5px;
+                        letter-spacing: 5px;
+                    }}
+                    .footer {{
+                        text-align: center;
+                        margin-top: 20px;
+                        font-size: 12px;
+                        color: #666666;
+                    }}
+                    .warning {{
+                        color: #d32f2f;
+                        font-weight: bold;
+                        margin-top: 20px;
+                        padding: 10px;
+                        background-color: #ffebee;
+                        border-radius: 5px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>DEP Platform Login Verification</h1>
+                </div>
+                <div class="content">
+                    <p>Dear User,</p>
+                    <p>Thank you for using the DEP Platform. To complete your login process, please use the following OTP (One-Time Password):</p>
+                    <div class="otp">{otp}</div>
+                    <p><strong>Important Notes:</strong></p>
+                    <ul>
+                        <li>This OTP will expire in 10 minutes</li>
+                        <li>Do not share this OTP with anyone</li>
+                        <li>If you didn't request this OTP, please ignore this email</li>
+                    </ul>
+                    <div class="warning">
+                        <p>⚠️ Security Notice:</p>
+                        <ul>
+                            <li>Never share your OTP with anyone</li>
+                            <li>Our team will never ask for your OTP</li>
+                            <li>This is an automated message, please do not reply</li>
+                        </ul>
+                    </div>
+                    <p>Best regards,<br>DEP Platform Team</p>
+                </div>
+                <div class="footer">
+                    <p>This is an automated message, please do not reply to this email.</p>
+                    <p>© 2024 DEP Platform. All rights reserved.</p>
+                </div>
+            </body>
+        </html>
+        """
+
+        # Create plain text version
+        text = f"""
+        DEP Platform Login Verification
+
+        Dear User,
+
+        Thank you for using the DEP Platform. To complete your login process, please use the following OTP (One-Time Password):
+
+        {otp}
+
+        Important Notes:
+        - This OTP will expire in 10 minutes
+        - Do not share this OTP with anyone
+        - If you didn't request this OTP, please ignore this email
+
+        Security Notice:
+        ⚠️ Never share your OTP with anyone
+        ⚠️ Our team will never ask for your OTP
+        ⚠️ This is an automated message, please do not reply
+
+        Best regards,
+        DEP Platform Team
+
+        This is an automated message, please do not reply to this email.
+        © 2024 DEP Platform. All rights reserved.
+        """
+
+        # Attach both HTML and plain text versions
+        msg.attach(MIMEText(text, 'plain'))
+        msg.attach(MIMEText(html, 'html'))
+
+        # Create SMTP session
+        server = smtplib.SMTP(os.getenv('EMAIL_SERVER'), int(os.getenv('EMAIL_PORT')))
+        server.starttls()
+        server.login(os.getenv('EMAIL_USERNAME'), os.getenv('EMAIL_PASSWORD'))
+        
+        # Send email
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"OTP email sent successfully to {email}")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending OTP email to {email}: {str(e)}")
+        return False
+
+@app.route('/generate-otp', methods=['POST'])
+def generate_otp():
+    try:
+        data = request.get_json()
+        logger.debug(f"Received OTP generation request: {data}")
+        
+        if not data or 'email' not in data:
+            logger.warning("Missing email in OTP request")
+            return jsonify({'error': 'Email is required'}), 400
+            
+        email = data['email']
+        
+        # Validate IITRPR email domain
+        if not email.endswith('@iitrpr.ac.in'):
+            logger.warning(f"Invalid email domain for OTP request: {email}")
+            return jsonify({'error': 'Only IITRPR email addresses (@iitrpr.ac.in) are allowed'}), 400
+        
+        # Check if user exists
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            logger.warning(f"No account found for email: {email}")
+            return jsonify({'error': 'No account found with this email'}), 404
+        
+        # Generate OTP
+        otp = ''.join(random.choices('0123456789', k=6))
+        expires_at = datetime.utcnow() + timedelta(minutes=5)
+        
+        # Create OTP record
+        otp_record = OTP(
+            email=email,
+            otp_code=otp,
+            expires_at=expires_at,
+            is_used=False
+        )
+        
+        try:
+            db.session.add(otp_record)
+            db.session.commit()
+            logger.info(f"OTP generated for email: {email}")
+            
+            # Send OTP via email
+            if send_otp_email(email, otp):
+                return jsonify({
+                    'message': 'OTP sent successfully to your email',
+                    'expires_in': 300  # 5 minutes in seconds
+                }), 200
+            else:
+                return jsonify({'error': 'Failed to send OTP email'}), 500
+                
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error saving OTP: {str(e)}")
+            return jsonify({'error': 'Failed to generate OTP'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error in generate_otp: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/resend-otp', methods=['POST'])
+@rate_limit(limit=2, period=300)  # 2 requests per 5 minutes
+def resend_otp():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    # Check if user exists
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'No account found with this email'}), 404
+    
+    # Check for recent OTP
+    recent_otp = OTP.query.filter_by(
+        email=email,
+        is_used=False
+    ).order_by(OTP.created_at.desc()).first()
+    
+    if not recent_otp:
+        return jsonify({'error': 'No active OTP found. Please generate a new one.'}), 400
+    
+    if datetime.utcnow() - recent_otp.created_at < timedelta(minutes=1):
+        return jsonify({
+            'error': 'Please wait 1 minute before requesting another OTP',
+            'retry_after': 60 - (datetime.utcnow() - recent_otp.created_at).seconds
+        }), 429
+    
+    # Resend the existing OTP
+    if os.getenv('FLASK_ENV') == 'development':
+        return jsonify({
+            'message': 'OTP resent successfully (Development Mode)',
+            'otp': recent_otp.otp_code,  # Remove this in production
+            'expires_at': recent_otp.expires_at.isoformat()
+        }), 200
+    else:
+        if send_otp_email(email, recent_otp.otp_code):
+            return jsonify({
+                'message': 'OTP has been resent to your email',
+                'expires_at': recent_otp.expires_at.isoformat()
+            }), 200
+        else:
+            return jsonify({
+                'error': 'Failed to resend OTP email. Please try again.'
+            }), 500
+
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 @app.route('/uploads', methods=['POST'])
 @jwt_required()
 @swag_from({
@@ -1025,11 +1835,27 @@ def upload_file():
             try:
                 # Upload to Cloudinary
                 upload_result = cloudinary.uploader.upload(
+<<<<<<< HEAD
                     file.stream,
                     folder="material_sharing",
                     resource_type="auto"
                 )
                 print("Upload Result:", upload_result)
+=======
+<<<<<<< HEAD
+                    file.stream,
+                    folder="material_sharing",
+                    resource_type="auto"
+                )
+                print("Upload Result:", upload_result)
+=======
+                    file,
+                    folder="material_sharing",
+                    resource_type="auto"
+                )
+                
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
                 file_url = upload_result.get('secure_url')
                 public_id = upload_result.get('public_id')
                 file_type = os.path.splitext(file.filename)[1][1:].lower()
@@ -1067,8 +1893,16 @@ def upload_file():
             )
         else:
             return jsonify({'message': 'Either a file or link must be provided'}), 400
+<<<<<<< HEAD
         # print("Received Files:", request.files)
         # print("Received Form Data:", request.form)
+=======
+<<<<<<< HEAD
+        # print("Received Files:", request.files)
+        # print("Received Form Data:", request.form)
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 
         # Save to database
         try:
@@ -1347,10 +2181,21 @@ def search_materials():
 def verify_token():
     try:
         current_user = get_jwt_identity()
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         logger.info(f"Token verified successfully for user: {current_user}")
         return jsonify({'user': current_user}), 200
     except Exception as e:
         logger.error(f"Token verification failed: {str(e)}")
+<<<<<<< HEAD
+=======
+=======
+        return jsonify({'user': current_user}), 200
+    except Exception as e:
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         return jsonify({'message': 'Invalid token'}), 401
 
 # Add file validation
@@ -1442,6 +2287,10 @@ def update_profile():
         print(f"Error updating profile: {str(e)}")
         return jsonify({'message': 'Failed to update profile'}), 500
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 # profile picture upload handling
 @app.route('/upload-profile-picture', methods=['POST'])
 @jwt_required()
@@ -1494,6 +2343,11 @@ def upload_profile_picture():
         print(f"Error uploading profile picture: {str(e)}")
         return jsonify({'message': f'Error uploading profile picture: {str(e)}'}), 500
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 @app.route('/user-stats', methods=['GET'])
 @jwt_required()
 def get_user_stats():
@@ -1506,6 +2360,10 @@ def get_user_stats():
         # Get user's comments count
         comments_count = Comment.query.filter_by(author=current_user).count()
         
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         # Get placements added count
         placements_added = Placement.query.filter_by(created_by=current_user).count()
         
@@ -1528,6 +2386,11 @@ def get_user_stats():
             'name': classroom.name
         } for classroom in classrooms_joined]
         
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         # Get recent activity (last 5 uploads)
         recent_uploads = Upload.query.filter_by(author=current_user)\
             .order_by(Upload.created_at.desc())\
@@ -1543,6 +2406,10 @@ def get_user_stats():
             'downvotes': upload.downvotes
         } for upload in recent_uploads]
         
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         # Create a log of searches (we need to track these in the respective search endpoints)
         # For now, we'll return placeholder counts that you can implement fully later
         
@@ -1556,6 +2423,14 @@ def get_user_stats():
             'dsa_searches': 0,  # Placeholder - implement tracking in search endpoint
             'classrooms_created': classrooms_created_data,
             'classrooms_joined': classrooms_joined_data,
+<<<<<<< HEAD
+=======
+=======
+        return jsonify({
+            'uploads': uploads_count,
+            'comments': comments_count,
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
             'recent_activity': recent_activity
         }), 200
     except Exception as e:
@@ -1565,7 +2440,15 @@ def get_user_stats():
 # Create tables
 with app.app_context():
     try:
+<<<<<<< HEAD
         # Create tables only if they don't exist
+=======
+<<<<<<< HEAD
+        # Drop all existing tables
+        db.drop_all()
+        logger.info("Dropped all existing tables")
+        
+        # Create all tables
         db.create_all()
         logger.info(f"Database initialized at {DB_PATH}")
         
@@ -2323,6 +3206,770 @@ def get_messages(classroom_id):
     except Exception as e:
         return jsonify({'message': f'Error fetching messages: {str(e)}'}), 500
 
+=======
+        # Create tables if they don't exist
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+        db.create_all()
+        logger.info(f"Database initialized at {DB_PATH}")
+        
+        # Verify database connection
+        test_user = User.query.first()
+        logger.info(f"Database connection test: {'Success' if test_user is not None else 'No users found'}")
+    except Exception as e:
+        logger.error(f"Error initializing database at {DB_PATH}: {str(e)}")
+        raise
+
+<<<<<<< HEAD
+@app.route('/api/jobs', methods=['GET'])
+#@jwt_required()
+# there is some problem with this authentication here---> LOOK INTO IT
+def get_jobs():
+    print("\nReceived request to get jobs")
+    # Get parameters from the request
+    field = request.args.get('field', '')
+    geoid = request.args.get('geoid', '')
+    page = request.args.get('page', 0)
+    sort_by = request.args.get('sortBy', '')
+    job_type = request.args.get('jobType', '')
+    exp_level = request.args.get('expLevel', '')
+    work_type = request.args.get('workType', '')
+    filter_by_company = request.args.get('filterByCompany', '')
+    
+    # Print all parameters received from frontend
+    print("\nReceived parameters from frontend:")
+    print(f"Field: {field}")
+    print(f"Geoid: {geoid}")
+    print(f"Page: {page}")
+    print(f"Sort By: {sort_by}")
+    print(f"Job Type: {job_type}")
+    print(f"Experience Level: {exp_level}")
+    print(f"Work Type: {work_type}")
+    print(f"Filter By Company: {filter_by_company}")
+    print("----------------------------------------\n")
+    
+    # API endpoint and key
+    api_key = "67e19812b136d19387075104"
+    url = "https://api.scrapingdog.com/linkedinjobs"
+    
+    # Set up parameters for the API call
+    params = {
+        "api_key": api_key,
+        "field": field,
+        "geoid": geoid,
+        "page": 1,
+        "sortBy": sort_by,
+        "jobType": job_type,
+        "expLevel": exp_level,
+        "workType": work_type,
+        "filterByCompany": filter_by_company
+    }
+    
+    # Remove empty parameters
+    params = {k: v for k, v in params.items() if v}
+    
+    try:
+        # Make the API call
+        response = requests.get(url, params=params)
+        
+        if response.status_code == 200:
+            return jsonify(response.json())
+        else:
+            return jsonify({
+                "error": f"Request failed with status code: {response.status_code}",
+                "message": response.text
+            }), response.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Routes for placement data
+@app.route('/placements', methods=['GET'])
+@jwt_required()
+def get_placements():
+    try:
+        placements = Placement.query.order_by(Placement.created_at.desc()).all()
+        
+        result = []
+        for placement in placements:
+            # Get people associated with this placement
+            people = PlacementPerson.query.filter_by(placement_id=placement.id).all()
+            
+            people_data = []
+            for person in people:
+                people_data.append({
+                    'id': person.id,
+                    'name': person.name,
+                    'resume_url': person.resume_url
+                })
+            
+            result.append({
+                'id': placement.id,
+                'company': placement.company,
+                'type': placement.type,
+                'mode': placement.mode,
+                'year': placement.year,
+                'role': placement.role,
+                'referral': placement.referral,
+                'created_at': placement.created_at.isoformat(),
+                'created_by': placement.created_by,
+                'people': people_data
+            })
+        
+        return jsonify({'placements': result}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching placements: {str(e)}'}), 500
+
+@app.route('/placements', methods=['POST'])
+@jwt_required()
+def add_placement():
+    try:
+        current_user = get_jwt_identity()
+        
+        # Get form data
+        company = request.form.get('company')
+        placement_type = request.form.get('type')
+        mode = request.form.get('mode')
+        year = request.form.get('year')
+        role = request.form.get('role')
+        referral = request.form.get('referral')
+        
+        # Validate required fields
+        if not company or not placement_type or not mode or not year or not role:
+            return jsonify({'message': 'Missing required fields'}), 400
+        
+        # Create new placement
+        new_placement = Placement(
+            company=company,
+            type=placement_type,
+            mode=mode,
+            year=year,
+            role=role,
+            referral=referral,
+            created_by=current_user
+        )
+        
+        db.session.add(new_placement)
+        db.session.flush()  # Get the ID without committing
+        
+        # Process people data
+        people_data = []
+        
+        # Determine how many people were submitted
+        person_count = 0
+        for key in request.form.keys():
+            if key.startswith('people[') and key.endswith('][name]'):
+                person_count = max(person_count, int(key.split('[')[1].split(']')[0]) + 1)
+        
+        for i in range(person_count):
+            name_key = f'people[{i}][name]'
+            name = request.form.get(name_key)
+            
+            if name:
+                resume_url = None
+                resume_public_id = None
+                
+                # Check if a resume was uploaded for this person
+                resume_key = f'people[{i}][resume]'
+                if resume_key in request.files and request.files[resume_key].filename:
+                    file = request.files[resume_key]
+                    
+                    # if not allowe 
+                    # file = request.files[resume_key]
+                    
+                    if not allowed_file(file.filename):
+                        return jsonify({'message': f'Invalid file type for resume. Allowed types: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
+                    
+                    # Upload to Cloudinary
+                    upload_result = cloudinary.uploader.upload(
+                        file,
+                        folder="placements",
+                        resource_type="raw"
+                    )
+                    
+                    resume_url = upload_result.get('secure_url')
+                    resume_public_id = upload_result.get('public_id')
+                
+                # Create person record
+                new_person = PlacementPerson(
+                    placement_id=new_placement.id,
+                    name=name,
+                    resume_url=resume_url,
+                    resume_public_id=resume_public_id
+                )
+                
+                db.session.add(new_person)
+                
+                people_data.append({
+                    'name': name,
+                    'resume_url': resume_url
+                })
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Placement added successfully',
+            'placement': {
+                'id': new_placement.id,
+                'company': new_placement.company,
+                'type': new_placement.type,
+                'mode': new_placement.mode,
+                'year': new_placement.year,
+                'role': new_placement.role,
+                'referral': new_placement.referral,
+                'people': people_data
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Error adding placement: {str(e)}'}), 500
+
+@app.route('/placements/search', methods=['GET'])
+@jwt_required()
+def search_placements():
+    try:
+        # Get search parameters
+        company = request.args.get('company', '')
+        year = request.args.get('year', '')
+        placement_type = request.args.get('type', '')
+        
+        # Build the query
+        query = Placement.query
+        
+        if company:
+            query = query.filter(Placement.company.like(f'%{company}%'))
+        
+        if year:
+            query = query.filter(Placement.year == year)
+        
+        if placement_type:
+            query = query.filter(Placement.type == placement_type)
+        
+        # Get results
+        placements = query.order_by(Placement.created_at.desc()).all()
+        
+        result = []
+        for placement in placements:
+            # Get people associated with this placement
+            people = PlacementPerson.query.filter_by(placement_id=placement.id).all()
+            
+            people_data = []
+            for person in people:
+                people_data.append({
+                    'id': person.id,
+                    'name': person.name,
+                    'resume_url': person.resume_url
+                })
+            
+            result.append({
+                'id': placement.id,
+                'company': placement.company,
+                'type': placement.type,
+                'mode': placement.mode,
+                'year': placement.year,
+                'role': placement.role,
+                'referral': placement.referral,
+                'created_at': placement.created_at.isoformat(),
+                'created_by': placement.created_by,
+                'people': people_data
+            })
+        
+        return jsonify({'placements': result}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error searching placements: {str(e)}'}), 500
+
+
+# Routes for interview experiences
+@app.route('/interview-experiences', methods=['GET'])
+@jwt_required()
+def get_interview_experiences():
+    try:
+        # Get search parameters
+        company = request.args.get('company', '')
+        year = request.args.get('year', '')
+        interview_type = request.args.get('type', '')
+        
+        # Build the query
+        query = InterviewExperience.query
+        
+        if company:
+            query = query.filter(InterviewExperience.company.like(f'%{company}%'))
+        
+        if year:
+            query = query.filter(InterviewExperience.year == year)
+        
+        if interview_type:
+            query = query.filter(InterviewExperience.type == interview_type)
+        
+        # Get results
+        interviews = query.order_by(InterviewExperience.created_at.desc()).all()
+        
+        result = []
+        for interview in interviews:
+            # Get questions associated with this interview
+            questions = InterviewQuestion.query.filter_by(interview_id=interview.id).all()
+            
+            questions_data = []
+            for question in questions:
+                questions_data.append({
+                    'id': question.id,
+                    'question': question.question,
+                    'answer': question.answer
+                })
+            
+            # Parse tags
+            tags = interview.tags.split(',') if interview.tags else []
+            
+            result.append({
+                'id': interview.id,
+                'company': interview.company,
+                'candidateName': interview.candidate_name,
+                'interviewerName': interview.interviewer_name,
+                'year': interview.year,
+                'type': interview.type,
+                'tips': interview.tips,
+                'created_at': interview.created_at.isoformat(),
+                'created_by': interview.created_by,
+                'tags': tags,
+                'questions': questions_data
+            })
+        
+        return jsonify({'interviews': result}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching interview experiences: {str(e)}'}), 500
+
+@app.route('/interview-experiences', methods=['POST'])
+@jwt_required()
+def add_interview_experience():
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        # Validate required fields
+        if not data.get('company') or not data.get('candidateName') or not data.get('year') or not data.get('type'):
+            return jsonify({'message': 'Missing required fields'}), 400
+        
+        if not data.get('questions') or len(data.get('questions')) == 0:
+            return jsonify({'message': 'At least one question is required'}), 400
+        
+        # Process tags
+        tags = ','.join(data.get('tags', [])) if data.get('tags') else ''
+        
+        # Create new interview experience
+        new_interview = InterviewExperience(
+            company=data.get('company'),
+            candidate_name=data.get('candidateName'),
+            interviewer_name=data.get('interviewerName', ''),
+            year=data.get('year'),
+            type=data.get('type'),
+            tips=data.get('tips', ''),
+            created_by=current_user,
+            tags=tags
+        )
+        
+        db.session.add(new_interview)
+        db.session.flush()  # Get the ID without committing
+        
+        # Process questions
+        questions_data = []
+        for q in data.get('questions', []):
+            if q.get('question') and q.get('answer'):
+                new_question = InterviewQuestion(
+                    interview_id=new_interview.id,
+                    question=q.get('question'),
+                    answer=q.get('answer')
+                )
+                
+                db.session.add(new_question)
+                
+                questions_data.append({
+                    'question': q.get('question'),
+                    'answer': q.get('answer')
+                })
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Interview experience added successfully',
+            'interview': {
+                'id': new_interview.id,
+                'company': new_interview.company,
+                'candidateName': new_interview.candidate_name,
+                'interviewerName': new_interview.interviewer_name,
+                'year': new_interview.year,
+                'type': new_interview.type,
+                'tips': new_interview.tips,
+                'tags': data.get('tags', []),
+                'questions': questions_data
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Error adding interview experience: {str(e)}'}), 500
+
+@app.route('/interview-experiences/<int:interview_id>', methods=['GET'])
+@jwt_required()
+def get_interview_experience(interview_id):
+    try:
+        interview = InterviewExperience.query.get(interview_id)
+        
+        if not interview:
+            return jsonify({'message': 'Interview experience not found'}), 404
+        
+        # Get questions associated with this interview
+        questions = InterviewQuestion.query.filter_by(interview_id=interview.id).all()
+        
+        questions_data = []
+        for question in questions:
+            questions_data.append({
+                'id': question.id,
+                'question': question.question,
+                'answer': question.answer
+            })
+        
+        # Parse tags
+        tags = interview.tags.split(',') if interview.tags else []
+        
+        return jsonify({
+            'interview': {
+                'id': interview.id,
+                'company': interview.company,
+                'candidateName': interview.candidate_name,
+                'interviewerName': interview.interviewer_name,
+                'year': interview.year,
+                'type': interview.type,
+                'tips': interview.tips,
+                'created_at': interview.created_at.isoformat(),
+                'created_by': interview.created_by,
+                'tags': tags,
+                'questions': questions_data
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching interview experience: {str(e)}'}), 500
+
+
+# @app.route('/api/duckduckgo-search', methods=['GET'])
+# def duckduckgo_search():
+#     query = request.args.get('q')
+    
+#     if not query:
+#         return jsonify({'error': 'Missing search query'}), 400
+    
+#     try:
+#         # DuckDuckGo search
+#         headers = {
+#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+#         }
+#         response = requests.get(
+#             f'https://html.duckduckgo.com/html/?q={query}',
+#             headers=headers
+#         )
+        
+#         if response.status_code != 200:
+#             return jsonify({'error': 'Failed to fetch search results'}), 500
+        
+#         # Parse the HTML response
+#         soup = BeautifulSoup(response.text, 'html.parser')
+#         results = []
+        
+#         # Extract search results
+#         for result in soup.select('.result'):
+#             title_elem = result.select_one('.result__a')
+#             snippet_elem = result.select_one('.result__snippet')
+            
+#             if title_elem and title_elem.get('href'):
+#                 title = title_elem.get_text(strip=True)
+#                 url = title_elem.get('href')
+#                 description = snippet_elem.get_text(strip=True) if snippet_elem else ''
+                
+#                 results.append({
+#                     'title': title,
+#                     'url': url,
+#                     'description': description
+#                 })
+        
+#         return jsonify({'results': results})
+    
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+# app.py (Flask backend)
+
+
+@app.route('/api/search-dsa', methods=['POST'])
+def search_dsa():
+    data = request.json
+    query = data.get('query', '')
+    sites = data.get('sites', [])
+    
+    if not query:
+        return jsonify({"error": "Query is required"}), 400
+    
+    # Format site-specific search query for DuckDuckGo
+    site_restrictions = " OR ".join([f"site:{site}" for site in sites])
+    search_query = f"{query} ({site_restrictions})"
+    
+    try:
+        # Using DuckDuckGo HTML API (they don't have an official API)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(
+            f"https://html.duckduckgo.com/html/?q={search_query}",
+            headers=headers
+        )
+        
+        if response.status_code != 200:
+            return jsonify({"error": "Failed to fetch search results"}), 500
+        
+        # Parse the HTML response
+        soup = BeautifulSoup(response.text, 'html.parser')
+        results = []
+        
+        # Extract search results
+        for result in soup.select('.result'):
+            title_elem = result.select_one('.result__title')
+            url_elem = result.select_one('.result__url')
+            snippet_elem = result.select_one('.result__snippet')
+            
+            if title_elem and url_elem:
+                title = title_elem.get_text(strip=True)
+                url = url_elem.get('href') if url_elem.get('href') else url_elem.get_text(strip=True)
+                
+                # Clean URL if it's from DuckDuckGo's redirect
+                if '/duckduckgo.com/' in url:
+                    url_match = re.search(r'uddg=([^&]+)', url)
+                    if url_match:
+                        url = requests.utils.unquote(url_match.group(1))
+                
+                # Identify source website
+                source = None
+                for site in sites:
+                    if site in url:
+                        source = site
+                        break
+                
+                snippet = snippet_elem.get_text(strip=True) if snippet_elem else ""
+                
+                results.append({
+                    "title": title,
+                    "url": url,
+                    "snippet": snippet,
+                    "source": source
+                })
+                
+                # Limit to 10 results
+                if len(results) >= 20:
+                    break
+        
+        return jsonify({"results": results})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# classroom type discussion backend
+@app.route('/api/classroom/create', methods=['POST'])
+@jwt_required()
+def create_classroom():
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        if not data or not data.get('name'):
+            return jsonify({'message': 'Classroom name is required'}), 400
+        
+        new_classroom = Classroom(
+            name=data.get('name'),
+            description=data.get('description', ''),
+            created_by=current_user
+        )
+        
+        db.session.add(new_classroom)
+        db.session.flush()  # Get the ID without committing
+        
+        # Add creator as a member
+        membership = ClassroomMembership(
+            user_id=current_user,
+            classroom_id=new_classroom.id
+        )
+        
+        db.session.add(membership)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Classroom created successfully',
+            'classroom': {
+                'id': new_classroom.id,
+                'name': new_classroom.name,
+                'description': new_classroom.description,
+                'created_by': new_classroom.created_by,
+                'created_at': new_classroom.created_at.isoformat()
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Error creating classroom: {str(e)}'}), 500
+
+@app.route('/api/classroom/join', methods=['POST'])
+@jwt_required()
+def join_classroom():
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        if not data or not data.get('classroom_id'):
+            return jsonify({'message': 'Classroom ID is required'}), 400
+        
+        classroom_id = data.get('classroom_id')
+        
+        # Check if classroom exists
+        classroom = Classroom.query.get(classroom_id)
+        if not classroom:
+            return jsonify({'message': 'Classroom not found'}), 404
+        
+        # Check if user is already a member
+        existing_membership = ClassroomMembership.query.filter_by(
+            user_id=current_user,
+            classroom_id=classroom_id
+        ).first()
+        
+        if existing_membership:
+            return jsonify({'message': 'You are already a member of this classroom'}), 400
+        
+        # Add user as a member
+        membership = ClassroomMembership(
+            user_id=current_user,
+            classroom_id=classroom_id
+        )
+        
+        db.session.add(membership)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Joined classroom successfully',
+            'classroom': {
+                'id': classroom.id,
+                'name': classroom.name,
+                'description': classroom.description,
+                'created_by': classroom.created_by,
+                'created_at': classroom.created_at.isoformat()
+            }
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Error joining classroom: {str(e)}'}), 500
+
+@app.route('/api/classrooms', methods=['GET'])
+@jwt_required()
+def get_classrooms():
+    try:
+        current_user = get_jwt_identity()
+        
+        # Get all classrooms the user is a member of
+        memberships = ClassroomMembership.query.filter_by(user_id=current_user).all()
+        classroom_ids = [membership.classroom_id for membership in memberships]
+        
+        classrooms = Classroom.query.filter(Classroom.id.in_(classroom_ids)).all()
+        
+        result = []
+        for classroom in classrooms:
+            result.append({
+                'id': classroom.id,
+                'name': classroom.name,
+                'description': classroom.description,
+                'created_by': classroom.created_by,
+                'created_at': classroom.created_at.isoformat()
+            })
+        
+        return jsonify({'classrooms': result}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching classrooms: {str(e)}'}), 500
+
+@app.route('/api/classroom/<int:classroom_id>/message', methods=['POST'])
+@jwt_required()
+def send_message(classroom_id):
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        if not data or not data.get('content'):
+            return jsonify({'message': 'Message content is required'}), 400
+        
+        # Check if classroom exists
+        classroom = Classroom.query.get(classroom_id)
+        if not classroom:
+            return jsonify({'message': 'Classroom not found'}), 404
+        
+        # Check if user is a member
+        membership = ClassroomMembership.query.filter_by(
+            user_id=current_user,
+            classroom_id=classroom_id
+        ).first()
+        
+        if not membership:
+            return jsonify({'message': 'You are not a member of this classroom'}), 403
+        
+        # Create new message
+        new_message = ClassroomMessage(
+            user_id=current_user,
+            classroom_id=classroom_id,
+            content=data.get('content')
+        )
+        
+        db.session.add(new_message)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Message sent successfully',
+            'message': {
+                'id': new_message.id,
+                'user_id': new_message.user_id,
+                'content': new_message.content,
+                'timestamp': new_message.timestamp.isoformat()
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Error sending message: {str(e)}'}), 500
+
+@app.route('/api/classroom/<int:classroom_id>/messages', methods=['GET'])
+@jwt_required()
+def get_messages(classroom_id):
+    try:
+        current_user = get_jwt_identity()
+        
+        # Check if classroom exists
+        classroom = Classroom.query.get(classroom_id)
+        if not classroom:
+            return jsonify({'message': 'Classroom not found'}), 404
+        
+        # Check if user is a member
+        membership = ClassroomMembership.query.filter_by(
+            user_id=current_user,
+            classroom_id=classroom_id
+        ).first()
+        
+        if not membership:
+            return jsonify({'message': 'You are not a member of this classroom'}), 403
+        
+        # Get all messages for this classroom
+        messages = ClassroomMessage.query.filter_by(classroom_id=classroom_id).order_by(ClassroomMessage.timestamp.asc()).all()
+        
+        result = []
+        for message in messages:
+            result.append({
+                'id': message.id,
+                'user_id': message.user_id,
+                'content': message.content,
+                'timestamp': message.timestamp.isoformat()
+            })
+        
+        return jsonify({'messages': result}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching messages: {str(e)}'}), 500
+
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
 if __name__ == '__main__':
     app.run(debug=True)
 

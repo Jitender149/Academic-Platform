@@ -13,7 +13,15 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       // Verify token with backend
+<<<<<<< HEAD
       axios.get('http://localhost:5000/verify-token', {
+=======
+<<<<<<< HEAD
+      axios.get('http://localhost:5000/verify-token', {
+=======
+      axios.get('http://127.0.0.1:5000/verify-token', {
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
@@ -35,7 +43,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
+<<<<<<< HEAD
       const response = await axios.post('http://localhost:5000/login', {
+=======
+<<<<<<< HEAD
+      const response = await axios.post('http://localhost:5000/login', {
+=======
+      const response = await axios.post('http://127.0.0.1:5000/login', {
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         username,
         password
       });
@@ -80,6 +96,10 @@ export const AuthProvider = ({ children }) => {
     toast.success('Logged out successfully');
   };
 
+<<<<<<< HEAD
+  const signup = async (username, email, password) => {
+=======
+<<<<<<< HEAD
   const signup = async (username, email, password) => {
     try {
       console.log("AuthContext signup called with:", { username, email, password });
@@ -87,6 +107,19 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post('http://localhost:5000/signup', {
         username,
         email,
+=======
+  const signup = async (username, password) => {
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
+    try {
+      console.log("AuthContext signup called with:", { username, email, password });
+      
+      const response = await axios.post('http://localhost:5000/signup', {
+        username,
+<<<<<<< HEAD
+        email,
+=======
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
         password
       });
 
@@ -128,13 +161,30 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
+<<<<<<< HEAD
     signup,
     setUser
+=======
+<<<<<<< HEAD
+    signup,
+    setUser
+=======
+    signup
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
   };
 
   return (
     <AuthContext.Provider value={value}>
+<<<<<<< HEAD
       {children}
+=======
+<<<<<<< HEAD
+      {children}
+=======
+      {!loading && children}
+>>>>>>> fad2872af265d079db5dd37c27b5b78c8a55027c
+>>>>>>> cfd8d8c509b4b877cece4727018e148df12f85fb
     </AuthContext.Provider>
   );
 };
