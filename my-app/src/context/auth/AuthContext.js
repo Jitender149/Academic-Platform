@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { createContext, useContext, useState, useEffect } from 'react';
 // import axios from 'axios';
 // import toast from 'react-hot-toast';
@@ -285,6 +286,132 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: "An error occurred during signup" }
     }
   }
+=======
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+const AuthContext = createContext(null);
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is logged in on mount
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Verify token with backend
+      axios.get('http://localhost:5000/verify-token', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(response => {
+        setUser(response.data.user);
+      })
+      .catch((error) => {
+        localStorage.removeItem('token');
+        setUser(null);
+        const errorMessage = error.response?.data?.message || 'Session expired. Please login again.';
+        toast.error(errorMessage);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const login = async (username, password) => {
+    try {
+      const response = await axios.post('http://localhost:5000/login', {
+        username,
+        password
+      });
+
+      if (response.data.access_token) {
+        localStorage.setItem('token', response.data.access_token);
+        setUser(response.data.username);
+        return { success: true };
+      }
+    } catch (error) {
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = error.response.data.message || 'Please check your username and password.';
+            break;
+          case 401:
+            errorMessage = 'Invalid username or password.';
+            break;
+          case 500:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = error.response.data.message || 'An unexpected error occurred.';
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      }
+      
+      toast.error(errorMessage);
+      return {
+        success: false,
+        error: errorMessage
+      };
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    toast.success('Logged out successfully');
+  };
+
+  const signup = async (username, email, password) => {
+    try {
+      console.log("AuthContext signup called with:", { username, email, password });
+      
+      const response = await axios.post('http://localhost:5000/signup', {
+        username,
+        email,
+        password
+      });
+
+      if (response.status === 201) {
+        toast.success('Account created successfully! Please login.');
+        return { success: true };
+      }
+    } catch (error) {
+      let errorMessage = 'Signup failed. Please try again.';
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = error.response.data.message || 'Please check your input.';
+            break;
+          case 409:
+            errorMessage = 'Username already exists. Please choose another.';
+            break;
+          case 500:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = error.response.data.message || 'An unexpected error occurred.';
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      }
+      
+      toast.error(errorMessage);
+      return {
+        success: false,
+        error: errorMessage
+      };
+    }
+  };
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
   const value = {
     user,
@@ -292,6 +419,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     signup,
+<<<<<<< HEAD
     token,
   }
 
@@ -305,3 +433,22 @@ export const useAuth = () => {
   }
   return context
 }
+=======
+    setUser
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}; 
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd

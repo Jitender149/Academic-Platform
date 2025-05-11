@@ -21,11 +21,16 @@
 //   DialogActions,
 //   Alert,
 //   CircularProgress,
+<<<<<<< HEAD
 //   Badge,
 //   Tooltip,
 //   IconButton,
 // } from "@mui/material"
 // import { CloudUpload as CloudUploadIcon, Edit as EditIcon } from "@mui/icons-material"
+=======
+// } from "@mui/material"
+// import { CloudUpload as CloudUploadIcon } from "@mui/icons-material"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 // import { useAuth } from "../context/auth/AuthContext"
 
 // const Profile = () => {
@@ -33,7 +38,10 @@
 //   const { user } = useAuth()
 //   const [loading, setLoading] = useState(false)
 //   const [saving, setSaving] = useState(false)
+<<<<<<< HEAD
 //   const [uploadingPicture, setUploadingPicture] = useState(false)
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //   const [error, setError] = useState("")
 //   const [success, setSuccess] = useState("")
 //   const [profileData, setProfileData] = useState({
@@ -64,7 +72,11 @@
 //   useEffect(() => {
 //     const fetchStats = async () => {
 //       try {
+<<<<<<< HEAD
 //         const response = await fetch("http://localhost:5000/user-stats", {
+=======
+//         const response = await fetch("http://127.0.0.1:5000/user-stats", {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //           headers: {
 //             Authorization: `Bearer ${localStorage.getItem("token")}`,
 //           },
@@ -86,13 +98,18 @@
 //   const fetchProfileData = async () => {
 //     try {
 //       setLoading(true)
+<<<<<<< HEAD
 
 //       // Fetch profile data
 //       const profileResponse = await fetch("http://localhost:5000/profile", {
+=======
+//       const response = await fetch("http://127.0.0.1:5000/profile", {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //         headers: {
 //           Authorization: `Bearer ${localStorage.getItem("token")}`,
 //         },
 //       })
+<<<<<<< HEAD
 
 //       if (profileResponse.ok) {
 //         const profileData = await profileResponse.json()
@@ -126,6 +143,31 @@
 //     } catch (err) {
 //       console.error("Error fetching profile data:", err)
 //       setError("Failed to fetch profile data: " + (err.message || "Unknown error"))
+=======
+//       const data = await response.json()
+
+//       if (response.ok) {
+//         setProfileData(data)
+//         setStats(
+//           data.stats || {
+//             uploads: 0,
+//             comments: 0,
+//             placements_added: 0,
+//             placements_searches: 0,
+//             interview_experiences_added: 0,
+//             interview_experience_searches: 0,
+//             dsa_searches: 0,
+//             classrooms_created: [],
+//             classrooms_joined: [],
+//             recent_activity: [],
+//           },
+//         )
+//       } else {
+//         setError(data.message || "Failed to fetch profile data")
+//       }
+//     } catch (err) {
+//       setError("Failed to fetch profile data")
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //     } finally {
 //       setLoading(false)
 //     }
@@ -142,17 +184,22 @@
 
 //   const handleImageUpload = async (e) => {
 //     const file = e.target.files[0]
+<<<<<<< HEAD
 //     // if (!file) return
 //     // if (!file) {
 //     //   console.log("Balle Balle", file?.name, file?.type)
 //     //   return
 //     // }
     
+=======
+//     if (!file) return
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
 //     const formData = new FormData()
 //     formData.append("file", file)
 
 //     try {
+<<<<<<< HEAD
 //       setUploadingPicture(true)
 //       setError("") // Clear any previous errors
 //       setSuccess("") // Clear any previous success messages
@@ -192,28 +239,56 @@
 //         setUploadingPicture(false)
 //         return
 //       }
+=======
+//       setSaving(true)
+//       const response = await fetch("http://127.0.0.1:5000/upload-profile-picture", {
+//         method: "POST",
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem("token")}`,
+//         },
+//         body: formData,
+//       })
+//       const data = await response.json()
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
 //       if (response.ok) {
 //         setProfileData((prev) => ({
 //           ...prev,
+<<<<<<< HEAD
 //           profile_picture: data.profile_picture || prev.profile_picture,
 //         }))
 //         setSuccess("Profile picture updated successfully")
+=======
+//           profile_picture: data.profile_picture,
+//         }))
+//         setSuccess("Profile picture updated successfully")
+//         setHasUnsavedChanges(true)
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //       } else {
 //         setError(data.message || "Failed to upload profile picture")
 //       }
 //     } catch (err) {
+<<<<<<< HEAD
 //       console.error("Error uploading profile picture:", err)
 //       setError("Failed to upload profile picture: " + (err.message || "Unknown error"))
 //     } finally {
 //       setUploadingPicture(false)
+=======
+//       setError("Failed to upload profile picture")
+//     } finally {
+//       setSaving(false)
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //     }
 //   }
 
 //   const handleSave = async () => {
 //     try {
 //       setSaving(true)
+<<<<<<< HEAD
 //       const response = await fetch("http://localhost:5000/update-profile", {
+=======
+//       const response = await fetch("http://127.0.0.1:5000/update-profile", {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //         method: "PUT",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -244,6 +319,7 @@
 //     }
 //   }
 
+<<<<<<< HEAD
 //   const refreshData = () => {
 //     fetchProfileData()
 //   }
@@ -260,6 +336,8 @@
 //     }
 //   }, [])
 
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //   if (loading) {
 //     return (
 //       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
@@ -268,12 +346,15 @@
 //     )
 //   }
 
+<<<<<<< HEAD
 //   // Determine avatar image source with fallback
 //   const avatarSrc = require("../Components/Jitender.jpeg")
 //   const getInitials = (name) => {
 //     return name ? name.charAt(0).toUpperCase() : "?"
 //   }
 
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //   return (
 //     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
 //       <Paper elevation={3} sx={{ p: 4 }}>
@@ -292,13 +373,21 @@
 //         </Box>
 
 //         {error && (
+<<<<<<< HEAD
 //           <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+=======
+//           <Alert severity="error" sx={{ mb: 2 }}>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //             {error}
 //           </Alert>
 //         )}
 
 //         {success && (
+<<<<<<< HEAD
 //           <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess("")}>
+=======
+//           <Alert severity="success" sx={{ mb: 2 }}>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //             {success}
 //           </Alert>
 //         )}
@@ -306,6 +395,7 @@
 //         <Grid container spacing={4}>
 //           <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
 //             <Box sx={{ position: "relative", display: "inline-block" }}>
+<<<<<<< HEAD
 //               <Badge
 //                 overlap="circular"
 //                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -343,12 +433,20 @@
 //                 </Avatar>
 //               </Badge>
 
+=======
+//               <Avatar
+//                 src={profileData.profile_picture}
+//                 alt={profileData.username}
+//                 sx={{ width: 150, height: 150, mb: 2 }}
+//               />
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //               <input
 //                 accept="image/*"
 //                 style={{ display: "none" }}
 //                 id="profile-picture-upload"
 //                 type="file"
 //                 onChange={handleImageUpload}
+<<<<<<< HEAD
 //                 disabled={uploadingPicture}
 //               />
 
@@ -391,6 +489,14 @@
 //                 type="file"
 //                 onChange={handleImageUpload}
 //               />
+=======
+//               />
+//               <label htmlFor="profile-picture-upload">
+//                 <Button component="span" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
+//                   Upload Picture
+//                 </Button>
+//               </label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 //             </Box>
 //           </Grid>
 
@@ -566,6 +672,10 @@
 
 // export default Profile
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 "use client"
 
 import { useState, useEffect } from "react"
@@ -588,11 +698,16 @@ import {
   DialogActions,
   Alert,
   CircularProgress,
+<<<<<<< HEAD
   Badge,
   Tooltip,
   IconButton,
 } from "@mui/material"
 import { CloudUpload as CloudUploadIcon, Edit as EditIcon } from "@mui/icons-material"
+=======
+} from "@mui/material"
+import { CloudUpload as CloudUploadIcon } from "@mui/icons-material"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 import { useAuth } from "../context/auth/AuthContext"
 
 const Profile = () => {
@@ -600,7 +715,10 @@ const Profile = () => {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+<<<<<<< HEAD
   const [uploadingPicture, setUploadingPicture] = useState(false)
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [profileData, setProfileData] = useState({
@@ -623,6 +741,7 @@ const Profile = () => {
   })
   const [openDialog, setOpenDialog] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+<<<<<<< HEAD
   // Flag to prevent stats refresh during file upload
   const [isUploading, setIsUploading] = useState(false)
 
@@ -631,12 +750,45 @@ const Profile = () => {
     fetchProfileData()
   }, [])
 
+=======
+
+  useEffect(() => {
+    fetchProfileData()
+  }, [])
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/user-stats", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setStats(data)
+        } else {
+          console.error("Failed to fetch user stats")
+        }
+      } catch (error) {
+        console.error("Error fetching user stats:", error)
+      }
+    }
+
+    fetchStats()
+  }, [])
+
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
   const fetchProfileData = async () => {
     try {
       setLoading(true)
 
       // Fetch profile data
+<<<<<<< HEAD
       const profileResponse = await fetch("http://localhost:5000/profile", {
+=======
+      const profileResponse = await fetch("http://127.0.0.1:5000/profile", {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -658,6 +810,7 @@ const Profile = () => {
         setError(errorData.message || "Failed to fetch profile data")
       }
 
+<<<<<<< HEAD
       // Only fetch stats if not currently uploading a file
       if (!isUploading) {
         await fetchUserStats()
@@ -676,6 +829,10 @@ const Profile = () => {
     
     try {
       const statsResponse = await fetch("http://localhost:5000/user-stats", {
+=======
+      // Fetch stats data
+      const statsResponse = await fetch("http://127.0.0.1:5000/user-stats", {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -687,8 +844,16 @@ const Profile = () => {
       } else {
         console.error("Failed to fetch user stats")
       }
+<<<<<<< HEAD
     } catch (error) {
       console.error("Error fetching user stats:", error)
+=======
+    } catch (err) {
+      console.error("Error fetching profile data:", err)
+      setError("Failed to fetch profile data: " + (err.message || "Unknown error"))
+    } finally {
+      setLoading(false)
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
     }
   }
 
@@ -703,12 +868,17 @@ const Profile = () => {
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0]
+<<<<<<< HEAD
     if (!file) return;
+=======
+    if (!file) return
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
     const formData = new FormData()
     formData.append("file", file)
 
     try {
+<<<<<<< HEAD
       // Set flags to prevent unnecessary API calls during upload
       setIsUploading(true)
       setUploadingPicture(true)
@@ -747,6 +917,23 @@ const Profile = () => {
         setError("Invalid response from server")
         return
       }
+=======
+      setSaving(true)
+      setError("") // Clear any previous errors
+
+      console.log("Uploading profile picture...")
+
+      const response = await fetch("http://127.0.0.1:5000/upload-profile-picture", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      })
+
+      const data = await response.json()
+      console.log("Upload response:", data)
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
       if (response.ok) {
         setProfileData((prev) => ({
@@ -754,6 +941,14 @@ const Profile = () => {
           profile_picture: data.profile_picture || prev.profile_picture,
         }))
         setSuccess("Profile picture updated successfully")
+<<<<<<< HEAD
+=======
+
+        // Force a refresh of the profile data
+        setTimeout(() => {
+          fetchProfileData()
+        }, 500)
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
       } else {
         setError(data.message || "Failed to upload profile picture")
       }
@@ -761,18 +956,26 @@ const Profile = () => {
       console.error("Error uploading profile picture:", err)
       setError("Failed to upload profile picture: " + (err.message || "Unknown error"))
     } finally {
+<<<<<<< HEAD
       setUploadingPicture(false)
       // Reset the upload flag after a short delay to ensure the upload process is complete
       setTimeout(() => {
         setIsUploading(false)
       }, 500)
+=======
+      setSaving(false)
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
     }
   }
 
   const handleSave = async () => {
     try {
       setSaving(true)
+<<<<<<< HEAD
       const response = await fetch("http://localhost:5000/update-profile", {
+=======
+      const response = await fetch("http://127.0.0.1:5000/update-profile", {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -803,12 +1006,22 @@ const Profile = () => {
     }
   }
 
+<<<<<<< HEAD
   // Modified window focus event listener to use the isUploading flag
   useEffect(() => {
     const handleFocus = () => {
       if (!isUploading && !uploadingPicture) {
         fetchProfileData()
       }
+=======
+  const refreshData = () => {
+    fetchProfileData()
+  }
+
+  useEffect(() => {
+    const handleFocus = () => {
+      refreshData()
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
     }
 
     window.addEventListener("focus", handleFocus)
@@ -816,7 +1029,11 @@ const Profile = () => {
     return () => {
       window.removeEventListener("focus", handleFocus)
     }
+<<<<<<< HEAD
   }, [isUploading, uploadingPicture])
+=======
+  }, [])
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
   if (loading) {
     return (
@@ -826,12 +1043,15 @@ const Profile = () => {
     )
   }
 
+<<<<<<< HEAD
   // Determine avatar image source with fallback
   const avatarSrc = require("../Components/Jitender.jpeg")
   const getInitials = (name) => {
     return name ? name.charAt(0).toUpperCase() : "?"
   }
 
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
@@ -850,13 +1070,21 @@ const Profile = () => {
         </Box>
 
         {error && (
+<<<<<<< HEAD
           <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+=======
+          <Alert severity="error" sx={{ mb: 2 }}>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             {error}
           </Alert>
         )}
 
         {success && (
+<<<<<<< HEAD
           <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess("")}>
+=======
+          <Alert severity="success" sx={{ mb: 2 }}>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             {success}
           </Alert>
         )}
@@ -864,6 +1092,7 @@ const Profile = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
             <Box sx={{ position: "relative", display: "inline-block" }}>
+<<<<<<< HEAD
               <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -901,12 +1130,20 @@ const Profile = () => {
                 </Avatar>
               </Badge>
 
+=======
+              <Avatar
+                src={profileData.profile_picture || ""}
+                alt={profileData.username || "User"}
+                sx={{ width: 150, height: 150, mb: 2 }}
+              />
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
               <input
                 accept="image/*"
                 style={{ display: "none" }}
                 id="profile-picture-upload"
                 type="file"
                 onChange={handleImageUpload}
+<<<<<<< HEAD
                 disabled={uploadingPicture}
               />
 
@@ -949,6 +1186,14 @@ const Profile = () => {
                 type="file"
                 onChange={handleImageUpload}
               />
+=======
+              />
+              <label htmlFor="profile-picture-upload">
+                <Button component="span" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
+                  Upload Picture
+                </Button>
+              </label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             </Box>
           </Grid>
 
@@ -1085,7 +1330,11 @@ const Profile = () => {
                           </Typography>
                           <br />
                           <Typography component="span" variant="caption" color="textSecondary">
+<<<<<<< HEAD
                             {new Date(activity.created_at).toLocaleDateString()} • {activity.upvotes} upvotes •{" "}
+=======
+                            {new Date(activity.created_at).toLocaleDateString()} •{activity.upvotes} upvotes •{" "}
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
                             {activity.downvotes} downvotes
                           </Typography>
                         </>
@@ -1122,4 +1371,9 @@ const Profile = () => {
   )
 }
 
+<<<<<<< HEAD
 export default Profile
+=======
+export default Profile
+
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd

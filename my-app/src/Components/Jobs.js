@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { useState } from 'react';
 // import { Box, Container, Typography } from '@mui/material';
 // import PageHeader from './PageHeader';
@@ -267,6 +268,16 @@ import JobList from './JobList';
 
 // Original code commented out for reference
 /*
+=======
+import React, { useState } from 'react';
+import { Box, Container, Typography } from '@mui/material';
+import PageHeader from './PageHeader';
+import SearchForm from './SearchForm';
+import JobList from './JobList';
+// import Header from "./Header"
+// import Footer from "./Footer"
+
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -349,6 +360,7 @@ function Jobs() {
       </Container>
     </Box>
   );
+<<<<<<< HEAD
 }
 */
 
@@ -491,6 +503,26 @@ function Jobs() {
       </Container>
     </Box>
   );
+=======
+  // return (
+  //   <div className="app">
+  //     <Header />
+  //     <main className="main-content">
+  //       <SearchForm onSearch={searchJobs} />
+  //       {error && <div className="error-message">Error: {error}</div>}
+  //       {loading ? (
+  //         <div className="loading">
+  //           <div className="spinner"></div>
+  //           <p>Searching for jobs...</p>
+  //         </div>
+  //       ) : (
+  //         <JobList jobs={jobs} />
+  //       )}
+  //     </main>
+  //     <Footer />
+  //   </div>
+  // );
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 }
 
 export default Jobs;

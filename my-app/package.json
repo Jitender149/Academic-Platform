@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+<<<<<<< HEAD
     "@emailjs/browser": "^4.4.1",
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.17.1",

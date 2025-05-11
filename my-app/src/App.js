@@ -6,6 +6,10 @@ import Home from "./Components/Home"
 import Resource from "./Components/Resource"
 import Login from "./Components/Login"
 import Signup from "./Components/Signup"
+<<<<<<< HEAD
+=======
+import PasswordReset from "./Components/PasswordReset"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 import AboutUs from "./Components/AboutUs"
 import Contact from "./Components/Contact"
 import Profile from "./Components/Profile"
@@ -16,9 +20,12 @@ import SeniorsData from "./Components/SeniorsData"
 import InterviewExperiences from "./Components/InterviewExperiences"
 import DSAResources from "./Components/DSAResource"
 import DiscussionPage from "./Components/DiscussionPage"
+<<<<<<< HEAD
 import NoticesPage from "./Components/notices/NoticePage"
 import ProfileNew from "./Components/ProfileNew"
 import ResetPassword from './Components/ResetPassword'
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
 function App() {
   return (
@@ -39,6 +46,10 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+<<<<<<< HEAD
+=======
+              <Route path="/reset-password" element={<PasswordReset />} />
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
               {/* Protected Routes */}
               <Route
@@ -77,7 +88,11 @@ function App() {
                 path="/profile"
                 element={
                   <ProtectedRoute>
+<<<<<<< HEAD
                     <ProfileNew />
+=======
+                    <Profile />
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
                   </ProtectedRoute>
                 }
               />
@@ -131,6 +146,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+<<<<<<< HEAD
               <Route
                 path="/notices"
                 element={
@@ -140,6 +156,8 @@ function App() {
                 }
               />
               <Route path="/reset-password" element={<ResetPassword />} />
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

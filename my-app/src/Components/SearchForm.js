@@ -1,10 +1,15 @@
 "use client"
 
 import { useState } from "react"
+<<<<<<< HEAD
 import { Box, Paper, Typography, useTheme, alpha } from '@mui/material';
 
 function SearchForm({ onSearch }) {
   const theme = useTheme();
+=======
+
+function SearchForm({ onSearch }) {
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
   const [searchParams, setSearchParams] = useState({
     field: "",
     geoid: "",
@@ -30,6 +35,7 @@ function SearchForm({ onSearch }) {
   }
 
   return (
+<<<<<<< HEAD
     <Paper 
       elevation={0}
       sx={{
@@ -67,6 +73,14 @@ function SearchForm({ onSearch }) {
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Keywords</label>
+=======
+    <div className="search-form-container">
+      <h2>Search Jobs</h2>
+      <form className="search-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="field">Keywords</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <input
               type="text"
               id="field"
@@ -74,6 +88,7 @@ function SearchForm({ onSearch }) {
               value={searchParams.field}
               onChange={handleChange}
               placeholder="Job title, skills, or company"
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -89,16 +104,23 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             />
           </div>
 
           <div className="form-group">
+<<<<<<< HEAD
             <label htmlFor="geoid" style={{ 
               display: 'block',
               marginBottom: '8px',
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Location</label>
+=======
+            <label htmlFor="geoid">Location</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <input
               type="text"
               id="geoid"
@@ -106,6 +128,7 @@ function SearchForm({ onSearch }) {
               value={searchParams.geoid}
               onChange={handleChange}
               placeholder="City, state, or country"
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -121,10 +144,14 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             />
           </div>
         </div>
 
+<<<<<<< HEAD
         <div className="form-row" style={{ 
           display: 'grid', 
           gridTemplateColumns: '1fr 1fr', 
@@ -138,11 +165,17 @@ function SearchForm({ onSearch }) {
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Job Type</label>
+=======
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="jobType">Job Type</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <select
               id="jobType"
               name="jobType"
               value={searchParams.jobType}
               onChange={handleChange}
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -159,6 +192,9 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             >
               <option value="">All Job Types</option>
               <option value="full_time">Full-time</option>
@@ -170,17 +206,22 @@ function SearchForm({ onSearch }) {
           </div>
 
           <div className="form-group">
+<<<<<<< HEAD
             <label htmlFor="expLevel" style={{ 
               display: 'block',
               marginBottom: '8px',
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Experience Level</label>
+=======
+            <label htmlFor="expLevel">Experience Level</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <select
               id="expLevel"
               name="expLevel"
               value={searchParams.expLevel}
               onChange={handleChange}
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -197,6 +238,9 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             >
               <option value="">All Experience Levels</option>
               <option value="internship">Internship</option>
@@ -208,6 +252,7 @@ function SearchForm({ onSearch }) {
           </div>
         </div>
 
+<<<<<<< HEAD
         <div className="form-row" style={{ 
           display: 'grid', 
           gridTemplateColumns: '1fr 1fr', 
@@ -221,11 +266,17 @@ function SearchForm({ onSearch }) {
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Work Type</label>
+=======
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="workType">Work Type</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <select
               id="workType"
               name="workType"
               value={searchParams.workType}
               onChange={handleChange}
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -242,6 +293,9 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             >
               <option value="">All Work Types</option>
               <option value="at_work">At Work</option>
@@ -251,17 +305,22 @@ function SearchForm({ onSearch }) {
           </div>
 
           <div className="form-group">
+<<<<<<< HEAD
             <label htmlFor="sortBy" style={{ 
               display: 'block',
               marginBottom: '8px',
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Sort By</label>
+=======
+            <label htmlFor="sortBy">Sort By</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <select
               id="sortBy"
               name="sortBy"
               value={searchParams.sortBy}
               onChange={handleChange}
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -278,6 +337,9 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             >
               <option value="">All</option>
               <option value="day">Day</option>
@@ -287,6 +349,7 @@ function SearchForm({ onSearch }) {
           </div>
         </div>
 
+<<<<<<< HEAD
         <div className="form-row" style={{ 
           marginBottom: '20px'
         }}>
@@ -297,6 +360,11 @@ function SearchForm({ onSearch }) {
               color: theme.palette.text.primary,
               fontWeight: 500
             }}>Company</label>
+=======
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="filterByCompany">Company</label>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             <input
               type="text"
               id="filterByCompany"
@@ -304,6 +372,7 @@ function SearchForm({ onSearch }) {
               value={searchParams.filterByCompany}
               onChange={handleChange}
               placeholder="Filter by company"
+<<<<<<< HEAD
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -319,10 +388,14 @@ function SearchForm({ onSearch }) {
                   boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
                 }
               }}
+=======
+              className="form-control"
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
             />
           </div>
         </div>
 
+<<<<<<< HEAD
         <button 
           type="submit" 
           style={{
@@ -346,6 +419,13 @@ function SearchForm({ onSearch }) {
         </button>
       </form>
     </Paper>
+=======
+        <button type="submit" className="search-button">
+          Search Jobs
+        </button>
+      </form>
+    </div>
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
   )
 }
 

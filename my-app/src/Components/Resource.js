@@ -815,6 +815,7 @@ const Resource = () => {
       <PageHeader title="Educational Resources" />
       
       <Container maxWidth="lg" sx={{ py: 4 }}>
+<<<<<<< HEAD
         <Box 
           sx={{ 
             textAlign: 'center',
@@ -909,6 +910,8 @@ const Resource = () => {
           </Typography>
         </Box>
 
+=======
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
         <ResourceSearch 
           onUploadClick={handleUploadClick}
           onAdvancedSearch={handleOpenSearchDialog}
@@ -1300,5 +1303,9 @@ const Resource = () => {
   );
 };
 
+<<<<<<< HEAD
 export default Resource; 
 
+=======
+export default Resource; 
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd

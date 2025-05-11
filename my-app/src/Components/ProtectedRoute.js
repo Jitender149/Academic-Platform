@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React from 'react';
 // import { Navigate } from 'react-router-dom';
 // import { useAuth } from '../context/auth/AuthContext';
@@ -39,10 +40,21 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
   const location = useLocation()
 
+=======
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/auth/AuthContext';
+import { Box, CircularProgress } from '@mui/material';
+
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
   if (loading) {
     return (
       <Box
         sx={{
+<<<<<<< HEAD
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -69,3 +81,24 @@ const ProtectedRoute = ({ children }) => {
 }
 
 export default ProtectedRoute
+=======
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  
+  return children;
+};
+
+export default ProtectedRoute; 
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd

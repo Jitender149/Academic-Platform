@@ -51,9 +51,27 @@ ENV/
 # Database
 *.db
 *.sqlite3
+<<<<<<< HEAD
+=======
+instance/
+uploads/
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+<<<<<<< HEAD
+=======
+
+# Flask
+flask_session/
+instance/
+.webassets-cache
+
+# Local development
+*.log
+local_settings.py
+db.sqlite3-journal
+>>>>>>> 9f1d0996107cb3e3c142f33b61fdd1f7ec0a7dbd
